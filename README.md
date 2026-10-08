@@ -42,6 +42,29 @@ El notebook original `Framework_EvaluAI.ipynb` se mantiene como referencia; el c
 
 Las secciones siguientes describen cada parte de la configuración y las funciones equivalentes.
 
+## Suites de experimentos y GitHub Actions
+
+`run_suite.py` ejecuta una suite completa definida en JSON (ver `experiments/datastructures.json`): genera las respuestas, las evalúa, compara configuraciones con pruebas de Wilcoxon pareadas y corre los análisis (estabilidad, distribución de puntajes crudos, sensibilidad a los umbrales a y b, y curva de calibración). Todos los experimentos usan la misma semilla, por lo que se evalúan sobre los mismos conjuntos de prueba.
+
+```bash
+python run_suite.py experiments/datastructures.json --smoke                  # prueba rápida
+python run_suite.py experiments/datastructures.json --only base,knowledge_detailed
+python run_suite.py experiments/datastructures.json                          # suite completa
+```
+
+Las métricas agregadas (sin datos de estudiantes) quedan en `results/<suite>/`, y las salidas completas en `runs/<suite>/`. Los *mini-prompts* usados por las suites están versionados en `miniprompts/`.
+
+La suite también se puede ejecutar en GitHub Actions (workflow `Experimentos`):
+
+1. Subir el dataset cifrado a `data/` y definir los secrets `OPENAI_API_KEY` y `DATASET_PASSPHRASE` (ver `data/README.md`).
+2. Crear o modificar `experiments/run-request.json` y hacer push, o lanzar el workflow manualmente desde la pestaña Actions:
+
+```json
+{"suite": "experiments/datastructures.json", "only": "", "smoke": true}
+```
+
+El workflow guarda las métricas agregadas en `results/` con un commit en la misma rama, y publica las salidas completas como artifact cifrado.
+
 ## Cargar dataset
 
 Se debe usar un archivo *xlsx* con al menos las siguientes columnas:

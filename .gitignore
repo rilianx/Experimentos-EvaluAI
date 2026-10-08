@@ -7,3 +7,5 @@ Responses/
 Evals/
 Plots/
 *.xlsx
+runs/
+run.log

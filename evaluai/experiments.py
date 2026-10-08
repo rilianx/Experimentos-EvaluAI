@@ -7,12 +7,10 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from scipy.stats import spearmanr
-from sklearn.metrics import (mean_squared_error, mean_absolute_error, r2_score, accuracy_score,
-                             precision_score, recall_score, f1_score)
 
 from .dataset import generate_set
 from .llm import chat_gpt_multiple, extract_dicts
+from .metrics import metrics_per_repetition
 from .optimization import optimize_params, convert_gpt_scores
 from .prompts import generate_prompts
 
@@ -232,43 +230,6 @@ def generate_responses(dataset, prompts, repetitions, set_size=100, seed=42, mod
     return filenames
 
 
-# Calcula las métricas de una repetición
-def compute_metrics(df_rep, normalize):
-    k = 3 if normalize else 1
-    real, pred = df_rep['real_eval'] / k, df_rep['gpt_eval'] / k
-
-    # Métricas de regresión
-    micro_mse = mean_squared_error(real, pred)
-    mse_per_set = {'mse_' + str(name): mean_squared_error(g['real_eval'] / k, g['gpt_eval'] / k)
-                   for name, g in df_rep.groupby('dataset')}
-    mae = mean_absolute_error(real, pred)
-
-    # MSE por clase (para calcular el macro)
-    mse_per_class = [mean_squared_error(g['real_eval'], g['gpt_eval']) for _, g in df_rep.groupby('real_eval')]
-    macro_mse = np.mean(mse_per_class)
-
-    spearman, p_value = spearmanr(df_rep['real_eval'], df_rep['gpt_eval'])
-    r2 = r2_score(df_rep['real_eval'], df_rep['gpt_eval'])
-
-    # Métricas de clasificación: Se calculan con puntaje GPT redondeado (0-3)
-    rounded = df_rep['rounded_gpt_eval']
-    stats = {
-        'spearman': spearman,
-        'macro_mse': macro_mse,
-        'micro_mse': micro_mse,
-    }
-    stats.update(mse_per_set)
-    stats.update({
-        'mae': mae,
-        'r2': r2,
-        'accuracy': accuracy_score(df_rep['real_eval'], rounded),
-        'precision': precision_score(df_rep['real_eval'], rounded, average='weighted', zero_division=0),
-        'recall': recall_score(df_rep['real_eval'], rounded, average='weighted', zero_division=0),
-        'f1': f1_score(df_rep['real_eval'], rounded, average='weighted', zero_division=0)
-    })
-    return stats
-
-
 # Lee y muestra resultados de archivos de evaluación. Retorna las tablas de promedios y desviaciones
 def read_evals(filenames, normalize=False, plot_dir="Plots", show_plot=False):
     df_mean_all = pd.DataFrame()
@@ -277,10 +238,7 @@ def read_evals(filenames, normalize=False, plot_dir="Plots", show_plot=False):
     for filename in filenames:
         full_df = pd.read_excel(filename, sheet_name='Evaluation')
         md = pd.read_excel(filename, sheet_name='Metadata (res)', header=None, index_col=0).T.reset_index(drop=True)
-        df = full_df[['repetition', 'dataset', 'real_eval', 'gpt_eval']].copy()
-        df['rounded_gpt_eval'] = df['gpt_eval'].round().astype(int)
-
-        mp_stats = pd.DataFrame([compute_metrics(df[df['repetition'] == r], normalize) for r in df['repetition'].unique()])
+        mp_stats = metrics_per_repetition(full_df, normalize).drop(columns=['repetition'])
         df_mean = mp_stats.mean().to_frame().T
         df_std = mp_stats.std(ddof=0).to_frame().T
 

@@ -6,3 +6,4 @@ scikit-learn
 plotly
 openpyxl
 tzdata
+matplotlib

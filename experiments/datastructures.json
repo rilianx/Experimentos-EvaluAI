@@ -1,0 +1,405 @@
+{
+  "name": "datastructures",
+  "description": "Experimentos del paper (curso Estructuras de Datos) y experimentos nuevos pedidos por los revisores",
+  "dataset": {
+    "path": "data/datasets_v2.xlsx",
+    "sheet_name": "AllDatasets (1dif)",
+    "columns": {
+      "context": "Contexto",
+      "question": "Pregunta",
+      "answer": "Respuesta",
+      "real_eval": "Promedio Redondeado",
+      "dataset": "DataSet"
+    }
+  },
+  "prompt_folder": "miniprompts",
+  "model": "gpt-4o-mini-2024-07-18",
+  "temperature": 0.1,
+  "generate": {
+    "repetitions": 10,
+    "set_size": 100,
+    "seed": 42,
+    "balance_set": false,
+    "repeat_set": false
+  },
+  "evaluate": {
+    "eval_function": "map2-simple",
+    "eval_params": [
+      1.0,
+      1,
+      9
+    ],
+    "train_set_size": 100,
+    "seed": 42
+  },
+  "experiments": [
+    {
+      "name": "base",
+      "prompt": {
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "knowledge_simple",
+      "prompt": {
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      },
+      "dataset": {
+        "columns": {
+          "context": "Contexto simple"
+        }
+      }
+    },
+    {
+      "name": "knowledge_detailed",
+      "prompt": {
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "examples_0G4B",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "examples_1G1B",
+      "prompt": {
+        "examples_basic": "examples_1G1B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "examples_1G3B",
+      "prompt": {
+        "examples_basic": "examples_1G3B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "examples_2G2B",
+      "prompt": {
+        "examples_basic": "examples_2G2B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "examples_3G1B",
+      "prompt": {
+        "examples_basic": "examples_3G1B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "examples_4G0B",
+      "prompt": {
+        "examples_basic": "examples_4G0B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "examples_4G4B",
+      "prompt": {
+        "examples_basic": "examples_4G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "analysis_minimal",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "analysis": "analysis_minimal.txt",
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "analysis_normal",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "analysis": "analysis_normal.txt",
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "analysis_full",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "analysis": "analysis_full.txt",
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "feedback_minimal",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "analysis": "analysis_minimal.txt",
+          "score": "score_single.txt",
+          "feedback": "feedback_minimal.txt"
+        }
+      }
+    },
+    {
+      "name": "feedback_normal",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "analysis": "analysis_minimal.txt",
+          "score": "score_single.txt",
+          "feedback": "feedback_normal.txt"
+        }
+      }
+    },
+    {
+      "name": "feedback_full",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "analysis": "analysis_minimal.txt",
+          "score": "score_single.txt",
+          "feedback": "feedback_full.txt"
+        }
+      }
+    },
+    {
+      "name": "feedback_full_soft",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "analysis": "analysis_minimal.txt",
+          "score": "score_single.txt",
+          "feedback": "feedback_full_soft.txt"
+        }
+      }
+    },
+    {
+      "name": "final_adjusted",
+      "responses_from": "examples_0G4B",
+      "evaluate": {
+        "eval_params": null
+      }
+    },
+    {
+      "name": "rubric_0to3",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric.txt"
+        }
+      },
+      "evaluate": {
+        "eval_params": [
+          1.0,
+          0,
+          3
+        ]
+      }
+    },
+    {
+      "name": "stability",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      },
+      "generate": {
+        "repeat_set": true
+      }
+    }
+  ],
+  "comparisons": [
+    [
+      "base",
+      "knowledge_simple"
+    ],
+    [
+      "base",
+      "knowledge_detailed"
+    ],
+    [
+      "knowledge_detailed",
+      "examples_0G4B"
+    ],
+    [
+      "knowledge_detailed",
+      "examples_1G1B"
+    ],
+    [
+      "knowledge_detailed",
+      "examples_1G3B"
+    ],
+    [
+      "knowledge_detailed",
+      "examples_2G2B"
+    ],
+    [
+      "knowledge_detailed",
+      "examples_3G1B"
+    ],
+    [
+      "knowledge_detailed",
+      "examples_4G0B"
+    ],
+    [
+      "knowledge_detailed",
+      "examples_4G4B"
+    ],
+    [
+      "examples_0G4B",
+      "analysis_minimal"
+    ],
+    [
+      "examples_0G4B",
+      "analysis_normal"
+    ],
+    [
+      "examples_0G4B",
+      "analysis_full"
+    ],
+    [
+      "analysis_minimal",
+      "feedback_minimal"
+    ],
+    [
+      "analysis_minimal",
+      "feedback_normal"
+    ],
+    [
+      "analysis_minimal",
+      "feedback_full"
+    ],
+    [
+      "analysis_minimal",
+      "feedback_full_soft"
+    ],
+    [
+      "examples_0G4B",
+      "final_adjusted"
+    ],
+    [
+      "examples_0G4B",
+      "rubric_0to3"
+    ]
+  ],
+  "analyses": {
+    "stability": "stability",
+    "raw_distribution": [
+      "base",
+      "examples_0G4B",
+      "rubric_0to3"
+    ],
+    "sensitivity": {
+      "experiment": "examples_0G4B",
+      "a_range": [
+        0,
+        5.01,
+        0.5
+      ],
+      "b_range": [
+        5,
+        10.01,
+        0.5
+      ]
+    },
+    "calibration": {
+      "experiment": "examples_0G4B",
+      "sizes": [
+        5,
+        10,
+        20,
+        40,
+        60
+      ],
+      "fixed_params": [
+        1.0,
+        1,
+        9
+      ],
+      "draws": 3
+    }
+  }
+}

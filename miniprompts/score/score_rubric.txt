@@ -1,0 +1,6 @@
+(score) Assign a score between 0 and 3 to the student's answer according to the following rubric:
+3: The response is complete, accurate, and demonstrates a thorough understanding of the topic.
+2: The response is mostly correct but may contain minor inaccuracies or lack detail.
+1: The response shows partial understanding, with significant gaps or errors.
+0: The response is incorrect, irrelevant, or absent.
+$score: integer between 0 and 3

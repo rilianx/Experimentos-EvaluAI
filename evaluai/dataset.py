@@ -23,7 +23,7 @@ def load_dataset(path, sheet_name, column_data, verbose=True):
 
         value = column_data[key]
         if value not in df.columns:
-            raise Exception(f"Error: La columna {value} no existe")
+            raise Exception(f"Error: La columna {value} no existe. Columnas disponibles: {list(df.columns)}")
 
         df = df.rename(columns={value: key})
 

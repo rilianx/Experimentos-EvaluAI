@@ -5,7 +5,7 @@ import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-from openai import OpenAI
+from openai import OpenAI, AuthenticationError, NotFoundError, PermissionDeniedError, BadRequestError
 
 _client = None
 
@@ -31,6 +31,9 @@ def chat_gpt(text, model, temperature, retries=10, wait=1):
                 messages=[{"role": "user", "content": text}],
             )
             return [choice.message.content for choice in response.choices]
+        except (AuthenticationError, NotFoundError, PermissionDeniedError, BadRequestError):
+            # Errores que no se solucionan reintentando (API key, modelo inexistente, etc.)
+            raise
         except Exception as e:
             if attempt == retries - 1:
                 print(f"\nError en la solicitud: {e}")
@@ -47,7 +50,7 @@ def chat_gpt_multiple(texts, model, temperature, concurrency=50):
         print(idx, end="-", flush=True)
 
     with ThreadPoolExecutor(max_workers=concurrency) as executor:
-        list(executor.map(task, range(len(texts))))
+        list(executor.map(task, range(len(texts))))  # Propaga la primera excepción fatal
     print()
     return answers
 
