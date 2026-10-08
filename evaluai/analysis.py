@@ -99,9 +99,12 @@ def distribution_plot(eval_df, output_file, title=None):
     for level in range(4):
         ax.hlines(level, level, level + 1, colors='red', linewidth=1)
     markers = ['o', 's', 'D', '^', 'v', 'P']
-    for i, (name, g) in enumerate(sorted(per_row.groupby('dataset'), key=lambda t: str(t[0]))):
+    groups = sorted(per_row.groupby('dataset'), key=lambda t: str(t[0]))
+    if len(groups) > 5:  # Demasiados grupos para una leyenda útil: una sola serie
+        groups = [(None, per_row)]
+    for i, (name, g) in enumerate(groups):
         ax.errorbar(g['x'], g['mean'], yerr=g['sd'], fmt=markers[i % len(markers)], markersize=4, capsize=2,
-                    elinewidth=0.8, alpha=0.85, label=str(name))
+                    elinewidth=0.8, alpha=0.85, label=None if name is None else str(name))
     ax.set_xlim(0, 4)
     ax.set_ylim(-0.1, 3.1)
     ax.set_xticks([0.5, 1.5, 2.5, 3.5], ['0/3', '1/3', '2/3', '3/3'])
@@ -110,7 +113,8 @@ def distribution_plot(eval_df, output_file, title=None):
     ax.set_ylabel('Model score (mapped, 0-3)')
     if title: ax.set_title(title)
     ax.grid(axis='y', alpha=0.3)
-    ax.legend(title='Dataset', loc='lower right', fontsize=9)
+    if groups[0][0] is not None:
+        ax.legend(title='Dataset', loc='lower right', fontsize=9)
     fig.tight_layout()
     fig.savefig(output_file, dpi=200)
     plt.close(fig)
