@@ -251,6 +251,58 @@
       }
     },
     {
+      "name": "ke_feedback_minimal",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt",
+          "feedback": "feedback_minimal.txt"
+        }
+      }
+    },
+    {
+      "name": "ke_feedback_normal",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt",
+          "feedback": "feedback_normal.txt"
+        }
+      }
+    },
+    {
+      "name": "ke_feedback_full",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt",
+          "feedback": "feedback_full.txt"
+        }
+      }
+    },
+    {
+      "name": "ke_feedback_full_soft",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt",
+          "feedback": "feedback_full_soft.txt"
+        }
+      }
+    },
+    {
       "name": "examples_levels",
       "prompt": {
         "examples_basic": "examples_levels_basic.txt",
@@ -419,6 +471,22 @@
     [
       "examples_0G4B",
       "final_adjusted_macro"
+    ],
+    [
+      "examples_0G4B",
+      "ke_feedback_minimal"
+    ],
+    [
+      "examples_0G4B",
+      "ke_feedback_normal"
+    ],
+    [
+      "examples_0G4B",
+      "ke_feedback_full"
+    ],
+    [
+      "examples_0G4B",
+      "ke_feedback_full_soft"
     ]
   ],
   "analyses": {
