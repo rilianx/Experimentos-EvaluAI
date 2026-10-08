@@ -1,0 +1,39 @@
+{
+    "dataset": {
+        "path": "datasets_v2.xlsx",
+        "sheet_name": "AllDatasets (1dif)",
+        "columns": {
+            "context": "Contexto simple",
+            "question": "Pregunta",
+            "answer": "Respuesta",
+            "real_eval": "Promedio Redondeado",
+            "dataset": "DataSet"
+        }
+    },
+    "prompt_folder": "GPTEvaluator/Experiments/Miniprompts_v2",
+    "prompt": {
+        "context": "context.txt",
+        "examples_basic": "examples_4G4B_basic.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+            "score": "score_single.txt",
+            "feedback": "*"
+        }
+    },
+    "model": "gpt-4o-mini-2024-07-18",
+    "temperature": 0.1,
+    "generate": {
+        "repetitions": 10,
+        "set_size": 100,
+        "seed": 42,
+        "balance_set": false,
+        "repeat_set": false
+    },
+    "evaluate": {
+        "eval_function": "map2-simple",
+        "eval_params": null,
+        "train_set_size": 100,
+        "seed": 42
+    }
+}
