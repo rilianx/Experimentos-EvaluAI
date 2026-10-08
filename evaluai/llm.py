@@ -5,7 +5,7 @@ import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-from openai import OpenAI, AuthenticationError, NotFoundError, PermissionDeniedError, BadRequestError
+from openai import OpenAI, AuthenticationError, NotFoundError, PermissionDeniedError, BadRequestError, RateLimitError
 
 _client = None
 
@@ -34,6 +34,14 @@ def chat_gpt(text, model, temperature, retries=10, wait=1):
         except (AuthenticationError, NotFoundError, PermissionDeniedError, BadRequestError):
             # Errores que no se solucionan reintentando (API key, modelo inexistente, etc.)
             raise
+        except RateLimitError as e:
+            # Sin saldo: detener la corrida en vez de descartar respuestas en silencio
+            if getattr(e, 'code', None) == 'insufficient_quota' or 'insufficient_quota' in str(e):
+                raise
+            if attempt == retries - 1:
+                print(f"\nError en la solicitud: {e}")
+                return [""]
+            time.sleep(wait * (attempt + 1))
         except Exception as e:
             if attempt == retries - 1:
                 print(f"\nError en la solicitud: {e}")
