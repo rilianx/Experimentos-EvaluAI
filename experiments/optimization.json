@@ -1,0 +1,142 @@
+{
+  "name": "optimization",
+  "description": "Experimentos del paper con preguntas del curso de Optimización (Tabla 9)",
+  "dataset": {
+    "path": "data/datasets_v2.xlsx",
+    "sheet_name": "Datasets Profesora Leslie",
+    "columns": {
+      "context": "Contexto detallado",
+      "question": "Pregunta",
+      "answer": "Respuesta",
+      "real_eval": "Eval Round",
+      "dataset": "DataSet"
+    }
+  },
+  "prompt_folder": "miniprompts",
+  "model": "gpt-4o-mini-2024-07-18",
+  "temperature": 0.1,
+  "generate": {
+    "repetitions": 10,
+    "set_size": 100,
+    "seed": 42,
+    "balance_set": false,
+    "repeat_set": false
+  },
+  "evaluate": {
+    "eval_function": "map2-simple",
+    "eval_params": [
+      1.0,
+      1,
+      9
+    ],
+    "train_set_size": 100,
+    "seed": 42
+  },
+  "experiments": [
+    {
+      "name": "base",
+      "prompt": {
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "knowledge",
+      "prompt": {
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "feedback_minimal",
+      "prompt": {
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt",
+          "feedback": "feedback_minimal.txt"
+        }
+      }
+    },
+    {
+      "name": "feedback_full_soft",
+      "prompt": {
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt",
+          "feedback": "feedback_full_soft.txt"
+        }
+      }
+    },
+    {
+      "name": "final_adjusted",
+      "responses_from": "feedback_minimal",
+      "evaluate": {
+        "eval_params": null
+      }
+    }
+  ],
+  "comparisons": [
+    [
+      "base",
+      "knowledge"
+    ],
+    [
+      "knowledge",
+      "feedback_minimal"
+    ],
+    [
+      "knowledge",
+      "feedback_full_soft"
+    ],
+    [
+      "feedback_minimal",
+      "final_adjusted"
+    ]
+  ],
+  "analyses": {
+    "raw_distribution": [
+      "base",
+      "knowledge"
+    ],
+    "sensitivity": {
+      "experiment": "feedback_minimal",
+      "a_range": [
+        0,
+        5.01,
+        0.5
+      ],
+      "b_range": [
+        5,
+        10.01,
+        0.5
+      ]
+    },
+    "calibration": {
+      "experiment": "feedback_minimal",
+      "sizes": [
+        5,
+        10,
+        20,
+        40,
+        60
+      ],
+      "fixed_params": [
+        1.0,
+        1,
+        9
+      ],
+      "draws": 3
+    }
+  }
+}

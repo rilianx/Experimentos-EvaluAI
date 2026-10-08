@@ -5,7 +5,7 @@
     "path": "data/datasets_v2.xlsx",
     "sheet_name": "AllDatasets (1dif)",
     "columns": {
-      "context": "Contexto",
+      "context": "Contexto detallado",
       "question": "Pregunta",
       "answer": "Respuesta",
       "real_eval": "Promedio Redondeado",
