@@ -19,7 +19,7 @@ import pandas as pd
 from evaluai import load_dataset, generate_prompts, generate_responses
 from evaluai.experiments import evaluate
 from evaluai.metrics import metrics_per_repetition, paired_comparison, stability_metrics
-from evaluai.analysis import sensitivity_grid, calibration_curve, raw_score_distribution, SUMMARY_COLS
+from evaluai.analysis import sensitivity_grid, calibration_curve, raw_score_distribution, grader_agreement, SUMMARY_COLS
 from main import load_env, ensure_prompt_folder
 
 
@@ -68,6 +68,12 @@ class Suite:
     def exp_dir(self, name):
         return os.path.join(self.run_dir, name)
 
+    def existing_responses(self, name):
+        folder = os.path.join(self.exp_dir(name), 'Responses')
+        if not os.path.isdir(folder): return None
+        files = sorted(f for f in os.listdir(folder) if f.endswith('.xlsx'))
+        return os.path.join(folder, files[-1]) if files else None
+
     def run(self, name):
         exp = self.experiments[name]
         cfg = self.exp_config(name)
@@ -75,8 +81,13 @@ class Suite:
         dataset = self.dataset(cfg)
         ensure_prompt_folder(cfg['prompt_folder'])
 
+        existing = self.existing_responses(name)
         if 'responses_from' in exp:
             responses_file = self.responses[exp['responses_from']]
+        elif existing:
+            # Respuestas de una corrida anterior (p. ej. descargadas del artifact): no se vuelve a consultar al modelo
+            print(f"Reutilizando {existing}")
+            responses_file = existing
         else:
             prompts = generate_prompts(cfg['prompt'], cfg['prompt_folder'], visualize=False)
             if len(prompts) != 1:
@@ -90,7 +101,8 @@ class Suite:
 
         e = cfg['evaluate']
         eval_file = evaluate(responses_file, dataset, e['eval_function'], e.get('eval_params'), e['train_set_size'], e['seed'],
-                             cfg['model'], cfg['temperature'], cfg['prompt_folder'], os.path.join(self.exp_dir(name), 'Evals'))
+                             cfg['model'], cfg['temperature'], cfg['prompt_folder'], os.path.join(self.exp_dir(name), 'Evals'),
+                             objective=e.get('objective', 'mse'))
         self.evals[name] = pd.read_excel(eval_file, sheet_name='Evaluation')
 
     def criteria(self, name):
@@ -110,9 +122,11 @@ class Suite:
             params = eval_df['params'].iloc[0] if eval_df['params'].nunique() == 1 else 'per-repetition'
             means.append({'experiment': name, 'params': params, **mean})
             stds.append({'experiment': name, **std})
-        means, stds = pd.DataFrame(means), pd.DataFrame(stds)
-        means.to_csv(os.path.join(self.results_dir, 'summary_mean.csv'), index=False)
-        stds.to_csv(os.path.join(self.results_dir, 'summary_std.csv'), index=False)
+        means = merge_csv(os.path.join(self.results_dir, 'summary_mean.csv'), pd.DataFrame(means), ['experiment'])
+        stds = merge_csv(os.path.join(self.results_dir, 'summary_std.csv'), pd.DataFrame(stds), ['experiment'])
+        order = {n: i for i, n in enumerate(self.experiments)}
+        means = means.sort_values('experiment', key=lambda c: c.map(order)).reset_index(drop=True)
+        stds = stds.set_index('experiment').loc[means['experiment']].reset_index()
 
         cols = ['macro_mse', 'mse_0', 'mse_1', 'mse_2', 'mse_3', 'micro_mse', 'mae', 'r2', 'bias', 'PTB', 'RTB', 'PBB', 'RBB']
         lines = ['| experiment | ' + ' | '.join(cols) + ' |', '|' + '---|' * (len(cols) + 1)]
@@ -128,8 +142,7 @@ class Suite:
             if a in self.evals and b in self.evals:
                 rows.append({'a': a, 'b': b, **paired_comparison(self.evals[a], self.evals[b])})
         if rows:
-            df = pd.DataFrame(rows)
-            df.to_csv(os.path.join(self.results_dir, 'comparisons.csv'), index=False)
+            df = merge_csv(os.path.join(self.results_dir, 'comparisons.csv'), pd.DataFrame(rows), ['a', 'b'])
             print('\nComparaciones pareadas (Wilcoxon):')
             print(df.to_string(index=False))
 
@@ -160,15 +173,39 @@ class Suite:
             grid.to_csv(os.path.join(self.results_dir, 'sensitivity.csv'), index=False)
             plot_sensitivity(grid, os.path.join(self.results_dir, 'sensitivity.png'))
 
-        cal = analyses.get('calibration')
-        if cal and cal['experiment'] in self.responses:
-            name = cal['experiment']
+        cals = analyses.get('calibration', [])
+        for cal in (cals if isinstance(cals, list) else [cals]):
+            if cal['experiment'] not in self.responses: continue
+            name, objective = cal['experiment'], cal.get('objective', 'mse')
+            suffix = f'_{name}_{objective}'
             sizes = [k for k in cal.get('sizes', [5, 10, 20, 40, 60]) if not self.smoke or k < 8]
             curve = calibration_curve(self.response_df(name), self.criteria(name), sizes, cal['fixed_params'],
-                                      draws=1 if self.smoke else cal.get('draws', 3))
-            curve.to_csv(os.path.join(self.results_dir, 'calibration.csv'), index=False)
+                                      draws=1 if self.smoke else cal.get('draws', 3), objective=objective)
+            curve.to_csv(os.path.join(self.results_dir, f'calibration{suffix}.csv'), index=False)
             agg = curve.groupby('k')[[c for c in curve.columns if c.startswith(('fitted_', 'fixed_'))]].agg(['mean', 'std'])
-            agg.to_csv(os.path.join(self.results_dir, 'calibration_summary.csv'))
+            agg.to_csv(os.path.join(self.results_dir, f'calibration{suffix}_summary.csv'))
+
+        ga = analyses.get('grader_agreement')
+        if ga and ga['experiment'] in self.evals:
+            cfg = self.exp_config(ga['experiment'])
+            ds = cfg['dataset']
+            grades = pd.read_excel(ds['path'], sheet_name=ds['sheet_name'])
+            grades['row'] = grades.index + 2
+            table, counts = grader_agreement(self.evals[ga['experiment']], grades, ga['graders'])
+            table.to_csv(os.path.join(self.results_dir, 'grader_agreement.csv'))
+            counts.to_csv(os.path.join(self.results_dir, 'grader_agreement_counts.csv'))
+            print('\nMSE entre evaluadores y modelo:'); print(table.round(3).to_string())
+
+
+# Combina con resultados previos: las filas cuyas claves se recalcularon se reemplazan
+def merge_csv(path, df, keys):
+    if os.path.exists(path):
+        old = pd.read_csv(path)
+        new_keys = set(map(tuple, df[keys].astype(str).values))
+        old = old[[tuple(k) not in new_keys for k in old[keys].astype(str).values]]
+        df = pd.concat([old, df], ignore_index=True)
+    df.to_csv(path, index=False)
+    return df
 
 
 def plot_sensitivity(grid, output_file):

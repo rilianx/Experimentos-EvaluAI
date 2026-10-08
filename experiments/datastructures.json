@@ -270,6 +270,14 @@
       }
     },
     {
+      "name": "final_adjusted_macro",
+      "responses_from": "examples_0G4B",
+      "evaluate": {
+        "eval_params": null,
+        "objective": "macro"
+      }
+    },
+    {
       "name": "rubric_0to3",
       "prompt": {
         "examples_basic": "examples_0G4B_basic.txt",
@@ -407,6 +415,10 @@
     [
       "examples_levels",
       "rubric_levels"
+    ],
+    [
+      "examples_0G4B",
+      "final_adjusted_macro"
     ]
   ],
   "analyses": {
@@ -431,21 +443,48 @@
         0.5
       ]
     },
-    "calibration": {
+    "calibration": [
+      {
+        "experiment": "examples_0G4B",
+        "sizes": [
+          5,
+          10,
+          20,
+          40,
+          60
+        ],
+        "fixed_params": [
+          1.0,
+          1,
+          9
+        ],
+        "draws": 3
+      },
+      {
+        "experiment": "examples_0G4B",
+        "sizes": [
+          5,
+          10,
+          20,
+          40,
+          60
+        ],
+        "fixed_params": [
+          1.0,
+          1,
+          9
+        ],
+        "draws": 3,
+        "objective": "macro"
+      }
+    ],
+    "grader_agreement": {
       "experiment": "examples_0G4B",
-      "sizes": [
-        5,
-        10,
-        20,
-        40,
-        60
-      ],
-      "fixed_params": [
-        1.0,
-        1,
-        9
-      ],
-      "draws": 3
+      "graders": [
+        "grade_g1",
+        "grade_g2",
+        "grade_g3"
+      ]
     }
   }
 }

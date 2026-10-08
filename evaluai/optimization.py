@@ -8,18 +8,35 @@ class ScoreWeighter():
     def eval(x, theta, right_offset):
         return np.dot(x, theta[:-right_offset])
 
+OBJECTIVES = ["mse", "macro"]
+
+
+# Pesos por muestra: "mse" pondera todas las respuestas igual; "macro" pondera cada nivel de puntaje igual
+# (equivale a minimizar el Macro-MSE)
+def sample_weights(real_scores, objective):
+    y = np.asarray(real_scores)
+    if objective == "mse":
+        return np.ones(len(y))
+    if objective == "macro":
+        levels, counts = np.unique(y, return_counts=True)
+        per_level = dict(zip(levels, len(y) / (len(levels) * counts)))
+        return np.array([per_level[v] for v in y])
+    raise ValueError(f"Error: objective debe ser uno de {OBJECTIVES}")
+
+
 class MapOptimizer(ABC):
     def __init__(self, map_params_size):
         self.map_params_size = map_params_size
 
-    def optimize(self, criteria_scores, real_scores):
+    def optimize(self, criteria_scores, real_scores, objective="mse"):
         bounds =  [(0, 1) for _ in range(len(criteria_scores[0]))] + [(0, 10)] * self.map_params_size
-        result = differential_evolution(self.error, bounds, args=(criteria_scores, real_scores), seed=1, strategy='rand1exp', mutation=(0,1), recombination=1)
+        weights = sample_weights(real_scores, objective)
+        result = differential_evolution(self.error, bounds, args=(criteria_scores, np.asarray(real_scores), weights), seed=1, strategy='rand1exp', mutation=(0,1), recombination=1)
         return result.x.tolist()
 
-    def error(self, theta, x, y):
+    def error(self, theta, x, y, sample_w):
         y_pred = self.f(x, theta)
-        mse = np.sum((y - y_pred) ** 2)
+        mse = np.sum(sample_w * (y - y_pred) ** 2)
 
         # Penalización cuando suma de ponderaciones != 1
         weights = theta[:-self.map_params_size]
@@ -142,17 +159,17 @@ class MapOptimizer4Mini(MapOptimizer):
 EVAL_FUNCTIONS = ["map2", "map2-simple", "map2-mini", "map4", "map4-mini", "map"]
 
 # Obtiene los parámetros óptimos para disminuir el error
-def optimize_params(criteria_scores, real_scores, eval_function):
+def optimize_params(criteria_scores, real_scores, eval_function, objective="mse"):
     if eval_function == "map4":
-        params = MapOptimizer4().optimize(criteria_scores, real_scores)
+        params = MapOptimizer4().optimize(criteria_scores, real_scores, objective)
     if eval_function == "map4-mini":
-        params = MapOptimizer4Mini().optimize(criteria_scores, real_scores)
+        params = MapOptimizer4Mini().optimize(criteria_scores, real_scores, objective)
     if eval_function == "map2" or eval_function == "map":
-        params = MapOptimizer2().optimize(criteria_scores, real_scores)
+        params = MapOptimizer2().optimize(criteria_scores, real_scores, objective)
     if eval_function == "map2-simple":
-        params = MapOptimizer2Simple().optimize(criteria_scores, real_scores)
+        params = MapOptimizer2Simple().optimize(criteria_scores, real_scores, objective)
     if eval_function == "map2-mini":
-        params = MapOptimizer2Mini().optimize(criteria_scores, real_scores)
+        params = MapOptimizer2Mini().optimize(criteria_scores, real_scores, objective)
     if eval_function not in EVAL_FUNCTIONS:
         raise ValueError(f"Error: eval_function debe ser una de {EVAL_FUNCTIONS}")
 

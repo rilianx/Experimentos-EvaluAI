@@ -1,1 +1,8 @@
-{"suite": ["experiments/datastructures.json", "experiments/optimization.json"], "only": "", "smoke": false}
+{
+  "runs": [
+    {"suite": "experiments/datastructures.json", "only": "examples_0G4B,final_adjusted_macro"},
+    {"suite": "experiments/optimization.json", "only": "knowledge,final_adjusted_macro"}
+  ],
+  "reuse_run_id": "37836382177",
+  "smoke": false
+}

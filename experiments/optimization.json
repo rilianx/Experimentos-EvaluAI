@@ -84,6 +84,14 @@
       "evaluate": {
         "eval_params": null
       }
+    },
+    {
+      "name": "final_adjusted_macro",
+      "responses_from": "knowledge",
+      "evaluate": {
+        "eval_params": null,
+        "objective": "macro"
+      }
     }
   ],
   "comparisons": [
@@ -102,6 +110,10 @@
     [
       "feedback_minimal",
       "final_adjusted"
+    ],
+    [
+      "knowledge",
+      "final_adjusted_macro"
     ]
   ],
   "analyses": {
@@ -110,7 +122,7 @@
       "knowledge"
     ],
     "sensitivity": {
-      "experiment": "feedback_minimal",
+      "experiment": "knowledge",
       "a_range": [
         0,
         5.01,
@@ -122,21 +134,40 @@
         0.5
       ]
     },
-    "calibration": {
-      "experiment": "feedback_minimal",
-      "sizes": [
-        5,
-        10,
-        20,
-        40,
-        60
-      ],
-      "fixed_params": [
-        1.0,
-        1,
-        9
-      ],
-      "draws": 3
-    }
+    "calibration": [
+      {
+        "experiment": "knowledge",
+        "sizes": [
+          5,
+          10,
+          20,
+          40,
+          60
+        ],
+        "fixed_params": [
+          1.0,
+          1,
+          9
+        ],
+        "draws": 3
+      },
+      {
+        "experiment": "knowledge",
+        "sizes": [
+          5,
+          10,
+          20,
+          40,
+          60
+        ],
+        "fixed_params": [
+          1.0,
+          1,
+          9
+        ],
+        "draws": 3,
+        "objective": "macro"
+      }
+    ]
   }
 }

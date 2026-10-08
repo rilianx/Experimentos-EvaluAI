@@ -66,12 +66,12 @@ def get_real_scores(dataset):
 
 
 # Prepara el set de entrenamiento y obtiene los parámetros óptimos para disminuir el error
-def train(train_set, prompt, criteria, eval_function, model, temperature):
+def train(train_set, prompt, criteria, eval_function, model, temperature, objective="mse"):
     res_df = eval_gpt(train_set, prompt, criteria, model, temperature)
 
     real_scores = get_real_scores(res_df)
     criteria_scores = res_df[criteria].astype(float).values.tolist()
-    params = optimize_params(criteria_scores, real_scores, eval_function)
+    params = optimize_params(criteria_scores, real_scores, eval_function, objective)
     return np.round(params, 2)
 
 
@@ -266,7 +266,7 @@ def read_evals(filenames, normalize=False, plot_dir="Plots", show_plot=False):
 
 
 # Exportar archivo de evaluaciones
-def export_eval(filename, eval_set, res_md, eval_function, eval_params, train_set_size, seed, model, temperature, output_dir="Evals"):
+def export_eval(filename, eval_set, res_md, eval_function, eval_params, train_set_size, seed, model, temperature, output_dir="Evals", objective="mse"):
     os.makedirs(output_dir, exist_ok=True)
 
     filename = os.path.splitext(os.path.basename(filename))[0]
@@ -282,7 +282,8 @@ def export_eval(filename, eval_set, res_md, eval_function, eval_params, train_se
         'train_set_size': train_set_size,
         'seed': seed,
         'model': model,
-        'temperature': temperature
+        'temperature': temperature,
+        'objective': objective
     }
     eval_md = pd.DataFrame.from_dict(eval_md, orient='index')
 
@@ -294,7 +295,7 @@ def export_eval(filename, eval_set, res_md, eval_function, eval_params, train_se
 
 
 # Evalúa en base a las salidas de GPT
-def evaluate(filename, dataset, eval_function, eval_params=None, train_set_size=100, seed=42, model="gpt-4o-mini", temperature=0.1, prompt_folder=DEFAULT_PROMPT_FOLDER, output_dir="Evals"):
+def evaluate(filename, dataset, eval_function, eval_params=None, train_set_size=100, seed=42, model="gpt-4o-mini", temperature=0.1, prompt_folder=DEFAULT_PROMPT_FOLDER, output_dir="Evals", objective="mse"):
     res_df = pd.read_excel(filename, sheet_name='Responses')
 
     res_md = pd.read_excel(filename, sheet_name='Metadata', header=None, index_col=0)
@@ -313,7 +314,7 @@ def evaluate(filename, dataset, eval_function, eval_params=None, train_set_size=
         if eval_params is None:
             print(f"Evaluando conjunto de prueba {repetition} con AJUSTE")
             train_set = generate_set(dataset, train_set_size, int(seed + repetition), balance=False, exclude_set=test_set)
-            rep_params = train(train_set, prompt.prompt, prompt.criteria, eval_function, model, temperature)
+            rep_params = train(train_set, prompt.prompt, prompt.criteria, eval_function, model, temperature, objective)
             str_params = "[" + ", ".join("{:.2f}".format(param) for param in rep_params) + "]"
             print(f"Parámetros obtenidos: {str_params}")
 
@@ -326,7 +327,7 @@ def evaluate(filename, dataset, eval_function, eval_params=None, train_set_size=
 
     if eval_params is None: print()
     stored_params = None if eval_params is None else list(eval_params)
-    return export_eval(filename, eval_set, res_md, eval_function, stored_params, train_set_size, seed, model, temperature, output_dir)
+    return export_eval(filename, eval_set, res_md, eval_function, stored_params, train_set_size, seed, model, temperature, output_dir, objective)
 
 
 # Evalúa múltiples archivos de respuestas y muestra sus resultados. Retorna los archivos de evaluación
