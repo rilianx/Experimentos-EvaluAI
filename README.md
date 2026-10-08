@@ -14,9 +14,9 @@ cp config.example.json config.json
 
 La API key se lee de la variable de entorno **OPENAI_API_KEY** (o del archivo `.env`).
 
-Los *mini-prompts* se obtienen del repositorio [GPTEvaluator](https://github.com/rilianx/GPTEvaluator), que se clona automáticamente en `GPTEvaluator/` la primera vez que se ejecuta el script.
+Los *mini-prompts* están en `miniprompts/` (copiados de [GPTEvaluator](https://github.com/rilianx/GPTEvaluator), más los agregados para la revisión del paper).
 
-El dataset usado en los experimentos (`datasets_v2.xlsx`) está en [Google Drive](https://docs.google.com/spreadsheets/d/1rlM1Z31t6qbMVL5HK7-5g1cFmlcAC7ei/edit?gid=803566578#gid=803566578). Se debe descargar como *xlsx* y dejar en la raíz del repositorio (o indicar su ruta en `config.json`).
+El dataset usado en los experimentos está en `data/evaluai_dataset.xlsx` (ver `data/README.md`). Para usar otro archivo, indicar su ruta en `config.json`; la clave opcional `dataset.query` permite filtrar filas.
 
 ## Uso rápido
 
@@ -56,14 +56,14 @@ Las métricas agregadas (sin datos de estudiantes) quedan en `results/<suite>/`,
 
 La suite también se puede ejecutar en GitHub Actions (workflow `Experimentos`):
 
-1. Subir el dataset cifrado a `data/` y definir los secrets `OPENAI_API_KEY` y `DATASET_PASSPHRASE` (ver `data/README.md`).
+1. Definir el secret `OPENAI_API_KEY` del repositorio (Settings → Secrets and variables → Actions).
 2. Crear o modificar `experiments/run-request.json` y hacer push, o lanzar el workflow manualmente desde la pestaña Actions:
 
 ```json
-{"suite": "experiments/datastructures.json", "only": "", "smoke": true}
+{"suite": ["experiments/datastructures.json", "experiments/optimization.json"], "only": "", "smoke": true}
 ```
 
-El workflow guarda las métricas agregadas en `results/` con un commit en la misma rama, y publica las salidas completas como artifact cifrado.
+El workflow guarda las métricas agregadas en `results/` con un commit en la misma rama, y publica las salidas completas como artifact.
 
 ## Cargar dataset
 

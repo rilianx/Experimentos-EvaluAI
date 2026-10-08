@@ -7,5 +7,6 @@ Responses/
 Evals/
 Plots/
 *.xlsx
+!data/evaluai_dataset.xlsx
 runs/
 run.log

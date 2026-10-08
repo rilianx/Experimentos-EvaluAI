@@ -1,16 +1,17 @@
 {
     "dataset": {
-        "path": "datasets_v2.xlsx",
-        "sheet_name": "AllDatasets (1dif)",
+        "path": "data/evaluai_dataset.xlsx",
+        "sheet_name": "DataStructures",
+        "query": "in_paper_290 and reference_source != 'earlier GPT score'",
         "columns": {
-            "context": "Contexto simple",
-            "question": "Pregunta",
-            "answer": "Respuesta",
-            "real_eval": "Promedio Redondeado",
-            "dataset": "DataSet"
+            "context": "knowledge_detailed",
+            "question": "question",
+            "answer": "answer",
+            "real_eval": "score",
+            "dataset": "subset"
         }
     },
-    "prompt_folder": "GPTEvaluator/Experiments/Miniprompts_v2",
+    "prompt_folder": "miniprompts",
     "prompt": {
         "context": "context.txt",
         "examples_basic": "examples_4G4B_basic.txt",

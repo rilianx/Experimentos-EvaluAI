@@ -46,7 +46,7 @@ def ensure_prompt_folder(prompt_folder):
 
 def get_dataset(config):
     ds = config['dataset']
-    return load_dataset(ds['path'], ds['sheet_name'], ds['columns'])
+    return load_dataset(ds['path'], ds['sheet_name'], ds['columns'], query=ds.get('query'))
 
 
 def get_prompts(config, visualize=True):

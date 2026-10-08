@@ -62,7 +62,7 @@ class Suite:
         ds = cfg['dataset']
         key = json.dumps(ds, sort_keys=True)
         if key not in self._datasets:
-            self._datasets[key] = load_dataset(ds['path'], ds['sheet_name'], ds['columns'], verbose=False)
+            self._datasets[key] = load_dataset(ds['path'], ds['sheet_name'], ds['columns'], verbose=False, query=ds.get('query'))
         return self._datasets[key]
 
     def exp_dir(self, name):

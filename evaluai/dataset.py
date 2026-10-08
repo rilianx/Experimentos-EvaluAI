@@ -14,8 +14,10 @@ def show_dataset_info(dataset):
 
 
 # Carga un dataset a partir de un archivo xlsx y valida sus columnas
-def load_dataset(path, sheet_name, column_data, verbose=True):
+def load_dataset(path, sheet_name, column_data, verbose=True, query=None):
     df = pd.read_excel(path, sheet_name=sheet_name)
+    if query:
+        df = df.query(query)  # Filtro opcional sobre las columnas originales, p. ej. "in_paper_290"
 
     for key in MANDATORY_COLS:
         if key not in column_data.keys():

@@ -1,0 +1,32 @@
+### Examples
+**Question**: ¿Por qué una lista enlazada puede ser ineficiente para operaciones de búsqueda? Haga referencia a la complejidad temporal en su explicación.
+**Student's Answer**: debido a que debes recorrer la lista nodo por nodo y siendo el peor caso que este en la ultima posición, haciendo que recorra toda la lista con una complejidad O(n)
+**Score**: 10
+
+**Question**: ¿Cuando se recomienda utilizar arreglos en vez de listas enlazadas? Haga referencia a complejidades temporales en su explicación.
+**Student's Answer**: Un arreglo es recomendable en determinadas situaciones, mientras que la lista enlazada en otras.
+**Score**: 0
+
+**Question**: ¿Cómo se podría implementar un historial de navegación web usando dos pilas? El historial debe permitir ir hacia atrás y adelante con las páginas previamente visitadas. Describa un algoritmo.
+**Student's Answer**: Para implementar un historial de navegación web usando dos pilas se haría con: Una pila de "adelante" y otra pila hacia "atrás". Si se quiere ir adelante entonces el elemento de la pila "Adelante" pasa a la pila de "Atrás" y viceversa.
+**Score**: 7
+
+**Question**: Al usar un arreglo circular para implementar una cola, ¿cómo se puede determinar cuándo la cola está llena o vacía? Explica detalladamente.
+**Student's Answer**: Al usar un arreglo circular para implementar una cola, la manera de saber si esta llena o vacía es obteniendo su talla mediante una funcion, si la talla es igual a 0 la cola esta vacía, caso contrario, la cola estará llena.
+**Score**: 3
+
+**Question**: ¿Por qué se prefieren los árboles B/B+ para almacenamiento en disco en comparación con árboles binarios regulares?
+**Student's Answer**: Los árboles B/B+, al tener una altura reducida, minimizan la cantidad de lecturas/escrituras en el disco duro.
+**Score**: 10
+
+**Question**: ¿Cuál es la complejidad temporal del peor caso para la operación de búsqueda en una tabla hash y por qué? Describe las condiciones que debe tener la tabla para encontrarse en este peor caso.
+**Student's Answer**: La complejidad del peor caso es ocurre cuando la tabla es inefectiva para realizar las operación de búsqueda.
+**Score**: 0
+
+**Question**: ¿Por qué la búsqueda en un arreglo tiene complejidad O(n)? Expliqe las razones de esta complejidad.
+**Student's Answer**: por la cantidad de veces que tiene que recorrer para encontrarlo ya que tiene que buscar una cantidad de veces según el numero que sea n , a veces hay que recorrer el arreglo completo para poder encontrarlo .
+**Score**: 7
+
+**Question**: ¿Qué es la resolución de colisiones por encadenamiento en una tabla hash?
+**Student's Answer**: En este caso tendríamos que implementar una lista enlazada, para en este caso poder así agregar el dato que ya tenemos, y los posibles datos que puedan ocurrir debido a las colisiones
+**Score**: 3

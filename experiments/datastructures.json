@@ -2,14 +2,15 @@
   "name": "datastructures",
   "description": "Experimentos del paper (curso Estructuras de Datos) y experimentos nuevos pedidos por los revisores",
   "dataset": {
-    "path": "data/datasets_v2.xlsx",
-    "sheet_name": "AllDatasets (1dif)",
+    "path": "data/evaluai_dataset.xlsx",
+    "sheet_name": "DataStructures",
+    "query": "in_paper_290 and reference_source != 'earlier GPT score'",
     "columns": {
-      "context": "Contexto detallado",
-      "question": "Pregunta",
-      "answer": "Respuesta",
-      "real_eval": "Promedio Redondeado",
-      "dataset": "DataSet"
+      "context": "knowledge_detailed",
+      "question": "question",
+      "answer": "answer",
+      "real_eval": "score",
+      "dataset": "subset"
     }
   },
   "prompt_folder": "miniprompts",
@@ -55,7 +56,7 @@
       },
       "dataset": {
         "columns": {
-          "context": "Contexto simple"
+          "context": "knowledge_simple"
         }
       }
     },
@@ -250,6 +251,18 @@
       }
     },
     {
+      "name": "examples_levels",
+      "prompt": {
+        "examples_basic": "examples_levels_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
       "name": "final_adjusted",
       "responses_from": "examples_0G4B",
       "evaluate": {
@@ -260,6 +273,25 @@
       "name": "rubric_0to3",
       "prompt": {
         "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric.txt"
+        }
+      },
+      "evaluate": {
+        "eval_params": [
+          1.0,
+          0,
+          3
+        ]
+      }
+    },
+    {
+      "name": "rubric_levels",
+      "prompt": {
+        "examples_basic": "examples_levels0to3_basic.txt",
         "context": "context.txt",
         "question": "question.txt",
         "answer": "answer.txt",
@@ -363,6 +395,18 @@
     [
       "examples_0G4B",
       "rubric_0to3"
+    ],
+    [
+      "examples_0G4B",
+      "examples_levels"
+    ],
+    [
+      "rubric_0to3",
+      "rubric_levels"
+    ],
+    [
+      "examples_levels",
+      "rubric_levels"
     ]
   ],
   "analyses": {
@@ -370,7 +414,9 @@
     "raw_distribution": [
       "base",
       "examples_0G4B",
-      "rubric_0to3"
+      "rubric_0to3",
+      "examples_levels",
+      "rubric_levels"
     ],
     "sensitivity": {
       "experiment": "examples_0G4B",

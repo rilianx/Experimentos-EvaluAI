@@ -2,14 +2,14 @@
   "name": "optimization",
   "description": "Experimentos del paper con preguntas del curso de Optimización (Tabla 9)",
   "dataset": {
-    "path": "data/datasets_v2.xlsx",
-    "sheet_name": "Datasets Profesora Leslie",
+    "path": "data/evaluai_dataset.xlsx",
+    "sheet_name": "Optimization",
     "columns": {
-      "context": "Contexto detallado",
-      "question": "Pregunta",
-      "answer": "Respuesta",
-      "real_eval": "Eval Round",
-      "dataset": "DataSet"
+      "context": "knowledge_detailed",
+      "question": "question",
+      "answer": "answer",
+      "real_eval": "score",
+      "dataset": "exam"
     }
   },
   "prompt_folder": "miniprompts",
