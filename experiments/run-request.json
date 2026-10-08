@@ -1,7 +1,8 @@
 {
   "runs": [
-    {"suite": "experiments/datastructures.json", "only": "examples_0G4B,ke_feedback_minimal,ke_feedback_normal,ke_feedback_full,ke_feedback_full_soft"}
+    {"suite": "experiments/datastructures.json", "only": "base,examples_0G4B"},
+    {"suite": "experiments/optimization.json", "only": "base,knowledge"}
   ],
-  "reuse_run_id": "37840318214",
+  "reuse_run_id": "37842154880",
   "smoke": false
 }

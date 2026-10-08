@@ -553,6 +553,10 @@
         "grade_g2",
         "grade_g3"
       ]
-    }
+    },
+    "distribution_plots": [
+      "base",
+      "examples_0G4B"
+    ]
   }
 }

@@ -19,7 +19,7 @@ import pandas as pd
 from evaluai import load_dataset, generate_prompts, generate_responses
 from evaluai.experiments import evaluate
 from evaluai.metrics import metrics_per_repetition, paired_comparison, stability_metrics
-from evaluai.analysis import sensitivity_grid, calibration_curve, raw_score_distribution, grader_agreement, SUMMARY_COLS
+from evaluai.analysis import sensitivity_grid, calibration_curve, raw_score_distribution, grader_agreement, distribution_plot, SUMMARY_COLS
 from main import load_env, ensure_prompt_folder
 
 
@@ -184,6 +184,10 @@ class Suite:
             curve.to_csv(os.path.join(self.results_dir, f'calibration{suffix}.csv'), index=False)
             agg = curve.groupby('k')[[c for c in curve.columns if c.startswith(('fitted_', 'fixed_'))]].agg(['mean', 'std'])
             agg.to_csv(os.path.join(self.results_dir, f'calibration{suffix}_summary.csv'))
+
+        for name in analyses.get('distribution_plots', []):
+            if name in self.evals:
+                distribution_plot(self.evals[name], os.path.join(self.results_dir, f'distribution_{name}.png'))
 
         ga = analyses.get('grader_agreement')
         if ga and ga['experiment'] in self.evals:

@@ -168,6 +168,10 @@
         "draws": 3,
         "objective": "macro"
       }
+    ],
+    "distribution_plots": [
+      "base",
+      "knowledge"
     ]
   }
 }
