@@ -150,7 +150,7 @@
       "knowledge_criteria"
     ],
     "sensitivity": {
-      "experiment": "knowledge_criteria",
+      "experiment": "knowledge",
       "a_range": [
         0,
         5.01,
@@ -164,7 +164,7 @@
     },
     "calibration": [
       {
-        "experiment": "knowledge_criteria",
+        "experiment": "knowledge",
         "sizes": [
           5,
           10,
@@ -180,7 +180,7 @@
         "draws": 3
       },
       {
-        "experiment": "knowledge_criteria",
+        "experiment": "knowledge",
         "sizes": [
           5,
           10,
@@ -199,7 +199,7 @@
     ],
     "distribution_plots": [
       "base",
-      "knowledge_criteria"
+      "knowledge"
     ]
   }
 }

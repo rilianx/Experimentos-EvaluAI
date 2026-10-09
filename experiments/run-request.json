@@ -1,8 +1,7 @@
 {
   "runs": [
-    {"suite": "experiments/datastructures.json", "only": "base,rubric_0to10,final_adjusted_criteria_macro,stability_criteria"},
-    {"suite": "experiments/optimization.json", "only": "base,knowledge,knowledge_criteria,final_adjusted_criteria_macro"}
+    {"suite": "experiments/optimization.json", "only": "base,knowledge,knowledge_criteria"}
   ],
-  "reuse_run_id": "37959338430",
+  "reuse_run_id": "37960210092",
   "smoke": false
 }
