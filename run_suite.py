@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 
 from evaluai import load_dataset, generate_prompts, generate_responses
+from evaluai.dataset import row_numbers
 from evaluai.experiments import evaluate
 from evaluai.metrics import metrics_per_repetition, paired_comparison, stability_metrics
 from evaluai.analysis import sensitivity_grid, calibration_curve, raw_score_distribution, grader_agreement, distribution_plot, recalibrated_comparison, SUMMARY_COLS
@@ -219,7 +220,7 @@ class Suite:
             cfg = self.exp_config(ga['experiment'])
             ds = cfg['dataset']
             grades = pd.read_excel(ds['path'], sheet_name=ds['sheet_name'])
-            grades['row'] = grades.index + 2
+            grades['row'] = row_numbers(grades)
             table, counts = grader_agreement(self.evals[ga['experiment']], grades, ga['graders'])
             table.to_csv(os.path.join(self.results_dir, 'grader_agreement.csv'))
             counts.to_csv(os.path.join(self.results_dir, 'grader_agreement_counts.csv'))

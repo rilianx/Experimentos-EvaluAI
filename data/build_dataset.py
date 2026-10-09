@@ -99,6 +99,8 @@ def build_datastructures(book):
     paper = df[df['in_paper_290']]
     mismatch = (paper['score'] != paper['key'].map(final['Promedio Redondeado'])).sum()
     assert mismatch == 0, f"{mismatch} puntajes no coinciden con el libro original"
+    # Se eliminan las respuestas sin las tres notas humanas (los id conservan la numeración original)
+    df = df[~df['exclusion_reason'].isin(MISSING_GRADES)].reset_index(drop=True)
     return df.drop(columns=['key'])
 
 
@@ -136,9 +138,11 @@ def build_fewshot(book):
     return pd.DataFrame(rows)
 
 
+MISSING_GRADES = ['no human grades', 'incomplete grades']
+
 README = [
     ('Sheet', 'Column', 'Description'),
-    ('DataStructures', '', 'Respuestas del curso Estructuras de Datos (ICI/ICD, PUCV) antes y después del filtro. Usar in_paper_290 / exclusion_reason para reproducir el dataset del paper.'),
+    ('DataStructures', '', 'Respuestas del curso Estructuras de Datos (ICI/ICD, PUCV) evaluadas por los tres expertos, antes y después del filtro de discrepancia. in_paper_290 marca las 287 usadas en el paper. Los id conservan la numeración original: los saltos corresponden a respuestas sin notas humanas completas, que se eliminaron'),
     ('DataStructures', 'id', 'Identificador de la respuesta'),
     ('DataStructures', 'subset', 'Subconjunto según el paper: C3-S, C2-Smax, C2-hard, C1-BA'),
     ('DataStructures', 'source_sheet', 'Nombre del subconjunto en el libro de trabajo original'),
@@ -149,9 +153,9 @@ README = [
     ('DataStructures', 'earlier_gpt_score', 'Puntaje (0-3) de una versión anterior del evaluador automático; solo disponible para C3'),
     ('DataStructures', 'n_human_grades, grade_spread', 'Cantidad de notas humanas y diferencia máxima entre ellas'),
     ('DataStructures', 'score_mean, score', 'Promedio de las notas humanas y puntaje de referencia (promedio redondeado; coincide con la moda cuando la diferencia es <= 1)'),
-    ('DataStructures', 'in_paper_290', 'La respuesta forma parte de las 290 usadas en el paper'),
+    ('DataStructures', 'in_paper_290', 'La respuesta forma parte del dataset del paper (287 respuestas)'),
     ('DataStructures', 'exclusion_reason', 'Motivo de exclusión de las respuestas que no forman parte del paper'),
-    ('DataStructures', 'reference_source', 'Origen del puntaje de referencia. "earlier GPT score": la respuesta no tiene notas humanas y su referencia proviene del evaluador automático (se recomienda excluirla)'),
+    ('DataStructures', 'reference_source', 'Origen del puntaje de referencia'),
     ('Optimization', '', 'Respuestas de certámenes del curso de Optimización (2020-2024)'),
     ('Optimization', 'exam', 'Certamen de origen'),
     ('Optimization', 'knowledge_detailed', 'Respuesta correcta / pauta'),

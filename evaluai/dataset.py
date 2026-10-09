@@ -29,10 +29,21 @@ def load_dataset(path, sheet_name, column_data, verbose=True, query=None):
 
         df = df.rename(columns={value: key})
 
+    rows = row_numbers(df)
     df = df[MANDATORY_COLS]
-    df['row'] = df.index + 2
+    df['row'] = rows
     if verbose: show_dataset_info(df)
     return df
+
+
+# Número de fila de cada respuesta en la planilla (identifica la respuesta en las corridas guardadas).
+# Si hay una columna id del tipo "DS-001", se deriva de ella para que no cambie al eliminar filas.
+def row_numbers(df):
+    if 'id' in df.columns:
+        num = df['id'].astype(str).str.extract(r'-(\d+)$')[0]
+        if num.notna().all():
+            return num.astype(int).values + 1
+    return df.index + 2
 
 
 # Retorna un conjunto de datos de entrenamiento o prueba
