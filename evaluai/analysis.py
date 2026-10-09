@@ -118,3 +118,31 @@ def distribution_plot(eval_df, output_file, title=None):
     fig.tight_layout()
     fig.savefig(output_file, dpi=200)
     plt.close(fig)
+
+
+# Macro-MSE (0-1) de puntajes mapeados con map2-simple, vectorizado para la búsqueda en grilla
+def _macro_mse(raw, real, a, b):
+    pred = np.clip((raw - a) / (b - a), 0, 1) * 3
+    errs = [np.mean(((pred[real == lv] - lv) / 3) ** 2) for lv in np.unique(real)]
+    return float(np.mean(errs))
+
+
+# Comparación con criterio recalibrado: para cada configuración y cada repetición, los umbrales (a, b) se eligen
+# por búsqueda en grilla minimizando el Macro-MSE en las respuestas de las otras repeticiones (sin las respuestas
+# del conjunto de prueba) y se evalúan en la repetición excluida. Separa el efecto de criterio (severidad), que la
+# recalibración absorbe, del efecto de discriminación, que permanece.
+def recalibrated_comparison(response_df, criteria, step=0.25, normalize=True):
+    df = response_df.copy()
+    df['raw'] = df[criteria].astype(float).mean(axis=1)
+    grid = [(a, b) for a in np.arange(0, 6.01, step) for b in np.arange(4, 10.01, step) if b - a >= 1]
+    rows = []
+    for rep, test in df.groupby('repetition'):
+        train = df[(df['repetition'] != rep) & (~df['row'].isin(test['row']))]
+        raw, real = train['raw'].values, train['real_eval'].values
+        a, b = min(grid, key=lambda ab: _macro_mse(raw, real, *ab))
+        mapped = test.copy()
+        mapped['gpt_eval'] = np.clip((mapped['raw'] - a) / (b - a), 0, 1) * 3
+        stats = metrics_per_repetition(mapped, normalize).iloc[0]
+        rows.append({'repetition': rep, 'a': a, 'b': b, 'macro_mse': stats['macro_mse'], 'bias': stats['bias'],
+                     'spearman': stats['spearman'], 'r2': stats['r2']})
+    return pd.DataFrame(rows)

@@ -19,7 +19,7 @@ import pandas as pd
 from evaluai import load_dataset, generate_prompts, generate_responses
 from evaluai.experiments import evaluate
 from evaluai.metrics import metrics_per_repetition, paired_comparison, stability_metrics
-from evaluai.analysis import sensitivity_grid, calibration_curve, raw_score_distribution, grader_agreement, distribution_plot, SUMMARY_COLS
+from evaluai.analysis import sensitivity_grid, calibration_curve, raw_score_distribution, grader_agreement, distribution_plot, recalibrated_comparison, SUMMARY_COLS
 from main import load_env, ensure_prompt_folder
 
 
@@ -188,6 +188,31 @@ class Suite:
         for name in analyses.get('distribution_plots', []):
             if name in self.evals:
                 distribution_plot(self.evals[name], os.path.join(self.results_dir, f'distribution_{name}.png'))
+
+        rc = analyses.get('recalibrated')
+        if rc:
+            from scipy.stats import wilcoxon
+            per_rep, summary = {}, []
+            for name in rc['experiments']:
+                if name not in self.responses: continue
+                res = recalibrated_comparison(self.response_df(name), self.criteria(name))
+                fixed = metrics_per_repetition(self.evals[name])
+                per_rep[name] = res
+                summary.append({'experiment': name,
+                                'macro_mse_fixed': fixed['macro_mse'].mean(), 'macro_mse_fixed_std': fixed['macro_mse'].std(ddof=0),
+                                'bias_fixed': fixed['bias'].mean(), 'spearman': fixed['spearman'].mean(),
+                                'macro_mse_recal': res['macro_mse'].mean(), 'macro_mse_recal_std': res['macro_mse'].std(ddof=0),
+                                'bias_recal': res['bias'].mean(), 'a_mean': res['a'].mean(), 'b_mean': res['b'].mean()})
+            pd.DataFrame(summary).to_csv(os.path.join(self.results_dir, 'recalibrated.csv'), index=False)
+            tests = []
+            for a_name, b_name in rc.get('comparisons', []):
+                if a_name in per_rep and b_name in per_rep:
+                    x, y = per_rep[a_name]['macro_mse'].values, per_rep[b_name]['macro_mse'].values
+                    try: p = wilcoxon(x, y).pvalue
+                    except ValueError: p = np.nan
+                    tests.append({'a': a_name, 'b': b_name, 'macro_mse_recal_a': x.mean(), 'macro_mse_recal_b': y.mean(), 'p': p})
+            pd.DataFrame(tests).to_csv(os.path.join(self.results_dir, 'recalibrated_comparisons.csv'), index=False)
+            print('\nComparación con criterio recalibrado:'); print(pd.DataFrame(summary).round(3).to_string(index=False))
 
         ga = analyses.get('grader_agreement')
         if ga and ga['experiment'] in self.evals:
