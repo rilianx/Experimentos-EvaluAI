@@ -287,6 +287,127 @@
       "generate": {
         "repeat_set": true
       }
+    },
+    {
+      "name": "g1_analysis_minimal",
+      "prompt": {
+        "examples_basic": "examples_1G1B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "analysis": "analysis_minimal.txt",
+          "score": "score_rubric10.txt"
+        }
+      }
+    },
+    {
+      "name": "g1_analysis_normal",
+      "prompt": {
+        "examples_basic": "examples_1G1B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "analysis": "analysis_normal.txt",
+          "score": "score_rubric10.txt"
+        }
+      }
+    },
+    {
+      "name": "g1_analysis_full",
+      "prompt": {
+        "examples_basic": "examples_1G1B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "analysis": "analysis_full.txt",
+          "score": "score_rubric10.txt"
+        }
+      }
+    },
+    {
+      "name": "g1_feedback_minimal",
+      "prompt": {
+        "examples_basic": "examples_1G1B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric10.txt",
+          "feedback": "feedback_minimal.txt"
+        }
+      }
+    },
+    {
+      "name": "g1_feedback_normal",
+      "prompt": {
+        "examples_basic": "examples_1G1B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric10.txt",
+          "feedback": "feedback_normal.txt"
+        }
+      }
+    },
+    {
+      "name": "g1_feedback_full",
+      "prompt": {
+        "examples_basic": "examples_1G1B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric10.txt",
+          "feedback": "feedback_full.txt"
+        }
+      }
+    },
+    {
+      "name": "g1_feedback_full_soft",
+      "prompt": {
+        "examples_basic": "examples_1G1B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric10.txt",
+          "feedback": "feedback_full_soft.txt"
+        }
+      }
+    },
+    {
+      "name": "g1_final_adjusted",
+      "responses_from": "examples_1G1B",
+      "evaluate": {
+        "eval_params": null
+      }
+    },
+    {
+      "name": "g1_final_adjusted_macro",
+      "responses_from": "examples_1G1B",
+      "evaluate": {
+        "eval_params": null,
+        "objective": "macro"
+      }
+    },
+    {
+      "name": "g1_stability",
+      "prompt": {
+        "examples_basic": "examples_1G1B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric10.txt"
+        }
+      },
+      "generate": {
+        "repeat_set": true
+      }
     }
   ],
   "comparisons": [
@@ -369,17 +490,53 @@
     [
       "examples_0G4B",
       "examples_1G1B"
+    ],
+    [
+      "examples_1G1B",
+      "g1_analysis_minimal"
+    ],
+    [
+      "examples_1G1B",
+      "g1_analysis_normal"
+    ],
+    [
+      "examples_1G1B",
+      "g1_analysis_full"
+    ],
+    [
+      "examples_1G1B",
+      "g1_feedback_minimal"
+    ],
+    [
+      "examples_1G1B",
+      "g1_feedback_normal"
+    ],
+    [
+      "examples_1G1B",
+      "g1_feedback_full"
+    ],
+    [
+      "examples_1G1B",
+      "g1_feedback_full_soft"
+    ],
+    [
+      "examples_1G1B",
+      "g1_final_adjusted"
+    ],
+    [
+      "examples_1G1B",
+      "g1_final_adjusted_macro"
     ]
   ],
   "analyses": {
-    "stability": "stability",
+    "stability": "g1_stability",
     "raw_distribution": [
       "base",
-      "examples_0G4B",
+      "examples_1G1B",
       "examples_levels"
     ],
     "sensitivity": {
-      "experiment": "examples_0G4B",
+      "experiment": "examples_1G1B",
       "a_range": [
         0,
         5.01,
@@ -393,7 +550,7 @@
     },
     "calibration": [
       {
-        "experiment": "examples_0G4B",
+        "experiment": "examples_1G1B",
         "sizes": [
           5,
           10,
@@ -409,7 +566,7 @@
         "draws": 3
       },
       {
-        "experiment": "examples_0G4B",
+        "experiment": "examples_1G1B",
         "sizes": [
           5,
           10,
@@ -427,7 +584,7 @@
       }
     ],
     "grader_agreement": {
-      "experiment": "examples_0G4B",
+      "experiment": "examples_1G1B",
       "graders": [
         "grade_g1",
         "grade_g2",
@@ -436,7 +593,7 @@
     },
     "distribution_plots": [
       "base",
-      "examples_0G4B"
+      "examples_1G1B"
     ],
     "recalibrated": {
       "experiments": [
@@ -457,7 +614,14 @@
         "ke_feedback_normal",
         "ke_feedback_full",
         "ke_feedback_full_soft",
-        "examples_levels"
+        "examples_levels",
+        "g1_analysis_minimal",
+        "g1_analysis_normal",
+        "g1_analysis_full",
+        "g1_feedback_minimal",
+        "g1_feedback_normal",
+        "g1_feedback_full",
+        "g1_feedback_full_soft"
       ],
       "comparisons": [
         [
@@ -503,6 +667,34 @@
         [
           "knowledge_detailed",
           "examples_1G1B"
+        ],
+        [
+          "examples_1G1B",
+          "g1_analysis_minimal"
+        ],
+        [
+          "examples_1G1B",
+          "g1_analysis_normal"
+        ],
+        [
+          "examples_1G1B",
+          "g1_analysis_full"
+        ],
+        [
+          "examples_1G1B",
+          "g1_feedback_minimal"
+        ],
+        [
+          "examples_1G1B",
+          "g1_feedback_normal"
+        ],
+        [
+          "examples_1G1B",
+          "g1_feedback_full"
+        ],
+        [
+          "examples_1G1B",
+          "g1_feedback_full_soft"
         ]
       ]
     }
