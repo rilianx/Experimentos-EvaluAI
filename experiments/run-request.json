@@ -1,7 +1,6 @@
 {
   "runs": [
-    {"suite": "experiments/datastructures.json", "only": "base,knowledge_simple,knowledge_detailed,examples_0G4B,examples_1G1B,examples_1G3B,examples_2G2B,examples_3G1B,examples_4G0B,examples_4G4B,analysis_minimal,analysis_normal,analysis_full,ke_feedback_minimal,ke_feedback_normal,ke_feedback_full,ke_feedback_full_soft,examples_levels,rubric_0to10"}
+    {"suite": "experiments/datastructures_criteria.json", "only": ""}
   ],
-  "reuse_run_id": "37962577014",
   "smoke": false
 }
