@@ -361,6 +361,29 @@
       }
     },
     {
+      "name": "final_adjusted_criteria_macro",
+      "responses_from": "rubric_0to10",
+      "evaluate": {
+        "eval_params": null,
+        "objective": "macro"
+      }
+    },
+    {
+      "name": "stability_criteria",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric10.txt"
+        }
+      },
+      "generate": {
+        "repeat_set": true
+      }
+    },
+    {
       "name": "rubric_levels",
       "prompt": {
         "examples_basic": "examples_levels0to3_basic.txt",
@@ -507,10 +530,14 @@
     [
       "rubric_0to3",
       "rubric_0to10"
+    ],
+    [
+      "rubric_0to10",
+      "final_adjusted_criteria_macro"
     ]
   ],
   "analyses": {
-    "stability": "stability",
+    "stability": "stability_criteria",
     "raw_distribution": [
       "base",
       "examples_0G4B",
@@ -520,7 +547,7 @@
       "rubric_0to10"
     ],
     "sensitivity": {
-      "experiment": "examples_0G4B",
+      "experiment": "rubric_0to10",
       "a_range": [
         0,
         5.01,
@@ -534,7 +561,7 @@
     },
     "calibration": [
       {
-        "experiment": "examples_0G4B",
+        "experiment": "rubric_0to10",
         "sizes": [
           5,
           10,
@@ -550,7 +577,7 @@
         "draws": 3
       },
       {
-        "experiment": "examples_0G4B",
+        "experiment": "rubric_0to10",
         "sizes": [
           5,
           10,
@@ -568,7 +595,7 @@
       }
     ],
     "grader_agreement": {
-      "experiment": "examples_0G4B",
+      "experiment": "rubric_0to10",
       "graders": [
         "grade_g1",
         "grade_g2",
@@ -577,7 +604,7 @@
     },
     "distribution_plots": [
       "base",
-      "examples_0G4B"
+      "rubric_0to10"
     ]
   }
 }

@@ -92,6 +92,25 @@
         "eval_params": null,
         "objective": "macro"
       }
+    },
+    {
+      "name": "knowledge_criteria",
+      "prompt": {
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric10.txt"
+        }
+      }
+    },
+    {
+      "name": "final_adjusted_criteria_macro",
+      "responses_from": "knowledge_criteria",
+      "evaluate": {
+        "eval_params": null,
+        "objective": "macro"
+      }
     }
   ],
   "comparisons": [
@@ -114,15 +133,24 @@
     [
       "knowledge",
       "final_adjusted_macro"
+    ],
+    [
+      "knowledge",
+      "knowledge_criteria"
+    ],
+    [
+      "knowledge_criteria",
+      "final_adjusted_criteria_macro"
     ]
   ],
   "analyses": {
     "raw_distribution": [
       "base",
-      "knowledge"
+      "knowledge",
+      "knowledge_criteria"
     ],
     "sensitivity": {
-      "experiment": "knowledge",
+      "experiment": "knowledge_criteria",
       "a_range": [
         0,
         5.01,
@@ -136,7 +164,7 @@
     },
     "calibration": [
       {
-        "experiment": "knowledge",
+        "experiment": "knowledge_criteria",
         "sizes": [
           5,
           10,
@@ -152,7 +180,7 @@
         "draws": 3
       },
       {
-        "experiment": "knowledge",
+        "experiment": "knowledge_criteria",
         "sizes": [
           5,
           10,
@@ -171,7 +199,7 @@
     ],
     "distribution_plots": [
       "base",
-      "knowledge"
+      "knowledge_criteria"
     ]
   }
 }
