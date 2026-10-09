@@ -1,0 +1,2 @@
+n_responses,runs_per_response,mean_sd_raw,max_sd_raw,pct_identical,pct_range_le_1,mean_sd_mapped_0_1,macro_mse_sd_across_runs
+100,10.0,0.14290826787416416,0.8432740427115678,0.67,0.97,0.016446835860693544,0.0019777032005703563
