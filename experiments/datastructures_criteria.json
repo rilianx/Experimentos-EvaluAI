@@ -365,6 +365,10 @@
     [
       "examples_0G4B",
       "ke_feedback_full_soft"
+    ],
+    [
+      "examples_0G4B",
+      "examples_1G1B"
     ]
   ],
   "analyses": {
@@ -491,6 +495,14 @@
         [
           "examples_0G4B",
           "examples_4G4B"
+        ],
+        [
+          "examples_0G4B",
+          "examples_1G1B"
+        ],
+        [
+          "knowledge_detailed",
+          "examples_1G1B"
         ]
       ]
     }
