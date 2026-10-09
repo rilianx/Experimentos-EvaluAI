@@ -349,6 +349,18 @@
       }
     },
     {
+      "name": "rubric_0to10",
+      "prompt": {
+        "examples_basic": "examples_0G4B_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric10.txt"
+        }
+      }
+    },
+    {
       "name": "rubric_levels",
       "prompt": {
         "examples_basic": "examples_levels0to3_basic.txt",
@@ -487,6 +499,14 @@
     [
       "examples_0G4B",
       "ke_feedback_full_soft"
+    ],
+    [
+      "examples_0G4B",
+      "rubric_0to10"
+    ],
+    [
+      "rubric_0to3",
+      "rubric_0to10"
     ]
   ],
   "analyses": {
@@ -496,7 +516,8 @@
       "examples_0G4B",
       "rubric_0to3",
       "examples_levels",
-      "rubric_levels"
+      "rubric_levels",
+      "rubric_0to10"
     ],
     "sensitivity": {
       "experiment": "examples_0G4B",

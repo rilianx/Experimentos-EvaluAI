@@ -1,7 +1,7 @@
 {
   "runs": [
-    {"suite": "experiments/optimization.json", "only": "base,knowledge"}
+    {"suite": "experiments/datastructures.json", "only": "examples_0G4B,rubric_0to3,rubric_0to10"}
   ],
-  "reuse_run_id": "37843713621",
+  "reuse_run_id": "37844227878",
   "smoke": false
 }
