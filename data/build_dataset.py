@@ -56,7 +56,9 @@ def build_datastructures(book):
     df['earlier_gpt_score'] = all_df['Eval'].where(df['assessment'] != 'C2')
     df['key'] = all_df['key']
 
-    # C1-BA fue evaluado por un único experto (columna Eval de su hoja de origen)
+    # C1-BA fue evaluado por los tres expertos; en las 17 respuestas retenidas sus notas coinciden y
+    # el libro original registra una sola (columna Eval de su hoja de origen). Las 3 excluidas por
+    # desacuerdo no se conservaron.
     c1 = df['subset'] == 'C1-BA'
     df.loc[c1, 'grade_g2'] = all_df.loc[c1, 'key'].map(final['Eval'])
     df.loc[c1, 'earlier_gpt_score'] = np.nan  # En el libro original es una copia de la nota del experto
@@ -82,7 +84,7 @@ def build_datastructures(book):
 
     # Filas del paper sin notas humanas: su puntaje de referencia venía del evaluador automático
     gpt_ref = df['in_paper_290'] & (df['n_human_grades'] == 0)
-    df['reference_source'] = np.where(df['subset'] == 'C1-BA', 'single expert', 'human graders')
+    df['reference_source'] = np.where(df['subset'] == 'C1-BA', 'human graders (3 identical, recorded once)', 'human graders')
     df.loc[gpt_ref, 'reference_source'] = 'earlier GPT score'
     df.loc[gpt_ref, 'score'] = all_df.loc[gpt_ref, 'key'].map(final['Promedio Redondeado'])
     df.loc[df['in_paper_290'] & (df['n_human_grades'] == 2), 'reference_source'] = 'human graders (2 of 3)'
@@ -143,7 +145,7 @@ README = [
     ('DataStructures', 'assessment', 'Control del que proviene la respuesta (C1, C2, C3)'),
     ('DataStructures', 'question_id', 'Identificador de la pregunta'),
     ('DataStructures', 'knowledge_detailed / knowledge_simple', 'Párrafo de conocimiento (no visible para el estudiante), versión detallada y simple'),
-    ('DataStructures', 'grade_g1, grade_g2, grade_g3', 'Notas (0-3) de los evaluadores humanos 1, 2 y 3. C1-BA tiene un único experto (grade_g2)'),
+    ('DataStructures', 'grade_g1, grade_g2, grade_g3', 'Notas (0-3) de los evaluadores humanos 1, 2 y 3. En C1-BA las tres notas coinciden y se registra una sola (grade_g2); las 3 respuestas de C1-BA excluidas por desacuerdo no se conservaron'),
     ('DataStructures', 'earlier_gpt_score', 'Puntaje (0-3) de una versión anterior del evaluador automático; solo disponible para C3'),
     ('DataStructures', 'n_human_grades, grade_spread', 'Cantidad de notas humanas y diferencia máxima entre ellas'),
     ('DataStructures', 'score_mean, score', 'Promedio de las notas humanas y puntaje de referencia (promedio redondeado; coincide con la moda cuando la diferencia es <= 1)'),
