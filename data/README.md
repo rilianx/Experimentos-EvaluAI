@@ -15,6 +15,6 @@ python data/build_dataset.py datasets_v2.xlsx
 ```
 
 Observaciones:
-- C1-BA fue evaluado por un único experto (columna `grade_g2`), por lo que el filtro de discrepancia entre evaluadores no aplica.
+- C1-BA tenía 20 respuestas evaluadas por los tres expertos; 3 se excluyeron por discrepancia y no se conservaron. En las 17 restantes las tres notas coinciden y el libro original registra una sola (columna `grade_g2`).
 - Tres respuestas de C3-S (`reference_source = "earlier GPT score"`) no tienen notas humanas: su puntaje de referencia en el paper provenía del evaluador automático anterior. Las suites de `experiments/` las excluyen.
 - Con tres notas que difieren a lo más en 1, el promedio redondeado coincide con la moda.
