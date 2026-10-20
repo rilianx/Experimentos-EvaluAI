@@ -15,6 +15,6 @@ python data/build_dataset.py datasets_v2.xlsx
 ```
 
 Observaciones:
-- C1-BA tenía 20 respuestas evaluadas por los tres expertos; 3 se excluyeron por discrepancia y no se conservaron. En las 17 restantes las tres notas coinciden y el libro original registra una sola (columna `grade_g2`).
+- C1-BA tenía 20 respuestas evaluadas por los tres expertos; 3 se excluyeron por discrepancia y no se conservaron. En las 17 restantes las tres notas coinciden; el libro original registra una sola, que se asigna a los tres evaluadores.
 - Se eliminaron las respuestas sin las tres notas humanas: tres de C3-S que no tenían ninguna (en la versión anterior del paper su puntaje de referencia provenía del evaluador automático) y tres con notas incompletas. Los `id` conservan la numeración original, y el código deriva de ellos el número de fila con que las corridas guardadas identifican cada respuesta.
 - Con tres notas que difieren a lo más en 1, el promedio redondeado coincide con la moda.
