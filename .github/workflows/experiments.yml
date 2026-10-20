@@ -1,9 +1,11 @@
 name: Experimentos
 
-# Se ejecuta al modificar experiments/run-request.json en un push, o manualmente desde la pestaña Actions.
-# Secret requerido: OPENAI_API_KEY.
+# Se ejecuta al modificar experiments/run-request.json en un push a una rama (no en tags),
+# o manualmente desde la pestaña Actions. Secret requerido: OPENAI_API_KEY.
 on:
   push:
+    branches:
+      - '**'
     paths:
       - experiments/run-request.json
   workflow_dispatch:
