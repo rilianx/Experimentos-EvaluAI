@@ -1,20 +1,20 @@
-# Datos
+# Data
 
-`evaluai_dataset.xlsx` contiene los datasets usados en los experimentos, con nombres de columnas estandarizados. La hoja `README` describe cada columna.
+`evaluai_dataset.xlsx` contains the datasets used in the experiments, with standardized column names. The `README` sheet describes each column.
 
-| Hoja | Contenido |
+| Sheet | Content |
 |---|---|
-| `DataStructures` | 319 respuestas del curso Estructuras de Datos evaluadas por los tres expertos, antes del filtro de discrepancia. `in_paper_290` marca las 287 usadas en el paper y `exclusion_reason` el motivo de exclusión del resto. |
-| `Optimization` | 535 respuestas (45 preguntas, 10 certámenes) del curso de Optimización. |
-| `FewShot` | Respuestas de nivel 1/3, 2/3 y 3/3 usadas como ejemplos few-shot (no forman parte de `DataStructures`). |
+| `DataStructures` | 319 responses from the Data Structures course graded by the three experts, before the disagreement filter. `in_paper_290` marks the 287 responses used in the paper, and `exclusion_reason` gives the reason for excluding the others. |
+| `Optimization` | 535 responses (45 questions, 10 exams) from the Optimization course. |
+| `FewShot` | Responses graded 1/3, 2/3 and 3/3 used as few-shot examples (not part of `DataStructures`). |
 
-El archivo se genera a partir del libro de trabajo original con:
+The file is built from the original workbook with:
 
 ```bash
 python data/build_dataset.py datasets_v2.xlsx
 ```
 
-Observaciones:
-- C1-BA tenía 20 respuestas evaluadas por los tres expertos; 3 se excluyeron por discrepancia y no se conservaron. En las 17 restantes las tres notas coinciden; el libro original registra una sola, que se asigna a los tres evaluadores.
-- Se eliminaron las respuestas sin las tres notas humanas: tres de C3-S que no tenían ninguna (en la versión anterior del paper su puntaje de referencia provenía del evaluador automático) y tres con notas incompletas. Los `id` conservan la numeración original, y el código deriva de ellos el número de fila con que las corridas guardadas identifican cada respuesta.
-- Con tres notas que difieren a lo más en 1, el promedio redondeado coincide con la moda.
+Notes:
+- C1-BA had 20 responses graded by the three experts; 3 were excluded for disagreement and were not kept. The three grades of the remaining 17 coincide; the original workbook records a single grade, which is assigned to the three graders.
+- Responses without the three human grades were removed: three C3-S responses with no human grade (in the previous version of the paper their reference score came from the earlier automatic grader) and three with incomplete grades. The `id` column keeps the original numbering, and the code derives from it the row number that identifies each response in stored runs.
+- With three grades that differ by at most 1, the rounded mean coincides with the mode.

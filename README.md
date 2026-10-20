@@ -1,171 +1,142 @@
-# Framework para experimentos EvaluAI
+# EvaluAI experiments
 
-El objetivo de este framework consiste en proporcionar un conjunto de funciones predefinidas para facilitar la evaluación y comparación de prompts en el contexto del proyecto EvaluAI.
+Code, prompts, data and results for the paper *EvaluAI: Automatic scoring short-answer constructed-response questions with LLMs*. The version used in the revised manuscript (R2) is tagged `evaluai-R2`.
 
-## Instalación
+EvaluAI grades short-answer responses with an LLM (GPT-4o mini). The prompt is built from *mini-prompts* (rubric criteria, knowledge of the expected answer, few-shot examples, analysis, feedback), and the model's 0–10 score is mapped to the four-level rubric (0–3) by a piecewise linear function with two thresholds `a` and `b`.
 
-Requiere Python 3.9 o superior.
+## Repository layout
+
+| Path | Content |
+|---|---|
+| `evaluai/` | Python package: dataset loading, prompt building, model queries, score mapping, metrics and analyses |
+| `miniprompts/` | Mini-prompts used in the experiments (one folder per component, one `.txt` per variant) |
+| `data/` | Standardized dataset (`evaluai_dataset.xlsx`) and the script that builds it (see `data/README.md`) |
+| `experiments/` | Experiment suites (JSON) |
+| `results/` | Aggregated metrics produced by the suites (no student data) |
+| `run_suite.py` | Runs a complete suite: generation, evaluation, paired comparisons and analyses |
+| `main.py` | Command-line interface for single experiments (`config.json`) |
+
+## Installation
+
+Requires Python 3.9 or later.
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env              # y escribir la API key de OpenAI
+cp .env.example .env              # then set your OpenAI API key
 cp config.example.json config.json
 ```
 
-La API key se lee de la variable de entorno **OPENAI_API_KEY** (o del archivo `.env`).
+The API key is read from the environment variable **OPENAI_API_KEY** (or from `.env`).
 
-Los *mini-prompts* están en `miniprompts/` (copiados de [GPTEvaluator](https://github.com/rilianx/GPTEvaluator), más los agregados para la revisión del paper).
+## Reproducing the paper
 
-El dataset usado en los experimentos está en `data/evaluai_dataset.xlsx` (ver `data/README.md`). Para usar otro archivo, indicar su ruta en `config.json`; la clave opcional `dataset.query` permite filtrar filas.
-
-## Uso rápido
-
-Todo el experimento se configura en `config.json` (ver `config.example.json`), y se ejecuta con `main.py`:
+| Suite | Content | Results |
+|---|---|---|
+| `experiments/datastructures_criteria.json` | Data Structures course: all prompt configurations (Tables 3–7), grader agreement (Table 8), sensitivity and calibration (Figures 6–7), strictness and discrimination (Table 10), stability | `results/datastructures_criteria/` |
+| `experiments/optimization.json` | Optimization course (Table 9) | `results/optimization/` |
+| `experiments/datastructures.json` | Same sequence without the rubric criteria in the prompt (not reported in R2) | `results/datastructures/` |
 
 ```bash
-python main.py prompts                          # Muestra el o los prompts que se van a evaluar
-python main.py generate                         # Genera las respuestas del modelo en Responses/
-python main.py evaluate --prefix feedback_normal  # Evalúa los archivos de Responses/ que empiezan con el prefijo
-python main.py read --prefix T_ --normalize     # Muestra las métricas de los archivos de Evals/
-python main.py all                              # generate + evaluate sobre las respuestas recién generadas
+python run_suite.py experiments/datastructures_criteria.json --smoke         # quick test
+python run_suite.py experiments/datastructures_criteria.json --only base,examples_1G1B
+python run_suite.py experiments/datastructures_criteria.json                 # full suite
 ```
 
-Cada subcomando acepta `--config <archivo>` (por defecto `config.json`); `evaluate` y `read` también aceptan una lista explícita de archivos.
+All configurations of a suite are evaluated on the same ten test sets of 100 responses (fixed seeds), so every comparison is paired (Wilcoxon signed-rank test). Model outputs are stored in `runs/<suite>/` and reused on later runs; only new configurations query the model. Aggregated metrics are written to `results/<suite>/`:
 
-Las funciones también se pueden usar directamente desde Python:
+| File | Content |
+|---|---|
+| `summary_mean.csv`, `summary_std.csv`, `summary.md` | Metrics per configuration (mean and standard deviation over the ten test sets) |
+| `comparisons.csv` | Paired comparisons between configurations |
+| `recalibrated.csv`, `recalibrated_comparisons.csv` | Macro-MSE after recalibrating the thresholds for each configuration, and Spearman correlation |
+| `sensitivity.csv` | Macro-MSE for a grid of thresholds `a`, `b` |
+| `calibration_*.csv` | Calibration of `a`, `b` with *k* graded responses |
+| `stability.csv` | Variability of individual scores across repeated inferences |
+| `raw_distribution_*.csv` | Distribution of the model's raw scores per reference level |
+| `grader_agreement.csv` | MSE between human graders and the model |
+
+### Running on GitHub Actions
+
+The `Experimentos` workflow runs the suites on GitHub:
+
+1. Add the repository secret `OPENAI_API_KEY` (Settings → Secrets and variables → Actions).
+2. Edit `experiments/run-request.json` and push, or start the workflow manually from the Actions tab:
+
+```json
+{
+  "runs": [{"suite": "experiments/datastructures_criteria.json", "only": ""}],
+  "reuse_run_id": "",
+  "smoke": false
+}
+```
+
+`reuse_run_id` downloads the model outputs of a previous run, so that only new configurations are queried. The workflow commits the aggregated metrics to `results/` on the same branch and uploads the full outputs as an artifact.
+
+## Single experiments (`main.py`)
+
+A single experiment is configured in `config.json` (see `config.example.json`):
+
+```bash
+python main.py prompts                             # show the prompt(s) to be evaluated
+python main.py generate                            # query the model and save responses in Responses/
+python main.py evaluate --prefix feedback_normal   # map the scores of Responses/ files starting with the prefix
+python main.py read --prefix T_ --normalize        # show the metrics of Evals/ files
+python main.py all                                 # generate + evaluate
+```
+
+Every subcommand accepts `--config <file>` (default `config.json`). The same functions can be used from Python:
 
 ```python
 from evaluai import load_dataset, generate_prompts, generate_responses, evaluate_mul, read_evals
 ```
 
-El notebook original `Framework_EvaluAI.ipynb` se mantiene como referencia; el código vigente está en el paquete `evaluai/`.
+### Dataset
 
-Las secciones siguientes describen cada parte de la configuración y las funciones equivalentes.
-
-## Suites de experimentos y GitHub Actions
-
-`run_suite.py` ejecuta una suite completa definida en JSON (ver `experiments/datastructures.json`): genera las respuestas, las evalúa, compara configuraciones con pruebas de Wilcoxon pareadas y corre los análisis (estabilidad, distribución de puntajes crudos, sensibilidad a los umbrales a y b, y curva de calibración). Todos los experimentos usan la misma semilla, por lo que se evalúan sobre los mismos conjuntos de prueba.
-
-```bash
-python run_suite.py experiments/datastructures.json --smoke                  # prueba rápida
-python run_suite.py experiments/datastructures.json --only base,knowledge_detailed
-python run_suite.py experiments/datastructures.json                          # suite completa
-```
-
-Las métricas agregadas (sin datos de estudiantes) quedan en `results/<suite>/`, y las salidas completas en `runs/<suite>/`. Los *mini-prompts* usados por las suites están versionados en `miniprompts/`.
-
-La suite también se puede ejecutar en GitHub Actions (workflow `Experimentos`):
-
-1. Definir el secret `OPENAI_API_KEY` del repositorio (Settings → Secrets and variables → Actions).
-2. Crear o modificar `experiments/run-request.json` y hacer push, o lanzar el workflow manualmente desde la pestaña Actions:
+`load_dataset(path, sheet_name, column_data, query=None)` reads an `.xlsx` file. `column_data` (key `dataset.columns` in `config.json`) maps the required fields to column names:
 
 ```json
-{"suite": ["experiments/datastructures.json", "experiments/optimization.json"], "only": "", "smoke": true}
+{"context": "knowledge_detailed", "question": "question", "answer": "answer", "real_eval": "score", "dataset": "subset"}
 ```
 
-El workflow guarda las métricas agregadas en `results/` con un commit en la misma rama, y publica las salidas completas como artifact.
+The optional `query` (key `dataset.query`) filters rows, e.g. `"in_paper_290 and reference_source != 'earlier GPT score'"` for the paper dataset.
 
-## Cargar dataset
+### Prompts
 
-Se debe usar un archivo *xlsx* con al menos las siguientes columnas:
-* **Contexto**: Conocimiento previo que necesita el modelo para evaluar la respuesta del estudiante.
-* **Pregunta**: Pregunta evaluada.
-* **Respuesta**: Respuesta del estudiante.
-* **Evaluación manual**: Puntaje de referencia dado por uno o más evaluadores humanos.
-* **Dataset de origen**: Dataset del cual provienen los datos para una fila en particular. Podría hacer referencia a diferentes evaluaciones, categorías de alumnos, cursos, etc.
+A prompt is a dictionary whose keys are mini-prompt components (folders of `miniprompts/`) and whose values are variants (`.txt` files in that folder). The wildcard `*` evaluates every variant of a folder.
 
-El nombre de las columnas se debe indicar (clave `dataset.columns` de `config.json`) en un diccionario con la siguiente estructura:
-
-```
-column_data = {
-    "context": ...,
-    "question": ...,
-    "answer": ...,
-    "real_eval": ...,
-    "dataset": ...
+```json
+{
+  "examples_basic": "examples_1G1B_basic.txt",
+  "context": "context.txt",
+  "question": "question.txt",
+  "answer": "answer.txt",
+  "instructions": {"score": "score_rubric10.txt"}
 }
 ```
 
-Por último, se debe cargar el dataset con la función `load_dataset(path, sheet_name, column_data)`
+`generate_prompts(prompt_data, prompt_folder, visualize=True)` builds the prompt(s). Mini-prompt metadata:
 
-- **path** - Ruta del archivo *xlsx* a utilizar.
-- **sheet_name** - Nombre de la hoja donde se encuentran los datos.
-- **column_data** - Diccionario con el nombre de las columnas.
+- A first line `#key: description` adds `key` to the output dictionary requested from the model. Without `:` (e.g. `#feedback`), the folder name is used as key.
+- In the `score` folder, each line `$criterion` or `$criterion: description` defines a criterion to score. If none is defined, `score` is used.
 
-## Definir prompts a utilizar
+### Generating responses
 
-Los prompts se componen de varios *mini-prompts*. Cada *mini-prompt* representa una parte del prompt completo, como la pregunta, la respuesta del estudiante, la instrucción para solicitar el puntaje, etc.
+`generate_responses(dataset, prompts, repetitions, set_size=100, seed=42, model="gpt-4o-mini", temperature=0.1, balance_set=False, repeat_set=False)` (key `generate`):
 
-El framework cuenta con algunos *mini-prompts* predefinidos en la ruta *GPTEvaluator/Experiments/Miniprompts_v2*, aunque también se pueden modificar o agregar nuevos *mini-prompts* en caso de ser necesario.
+- **repetitions**: number of test sets per prompt.
+- **set_size**: size of each test set.
+- **seed**: seed used to draw the test sets.
+- **balance_set**: same number of responses per score level.
+- **repeat_set**: use the same test set in every repetition (stability analysis).
 
-El prompt a evaluar se debe construir mediante un diccionario, donde la clave corresponde al nombre del *mini-prompt* o componente (question, examples, feedback...) y el valor corresponde a la variante a utilizar (feedback_minimal, feedback_full, feedback_normal...). Se debe respetar la estructura de archivos, donde los componentes son las carpetas y las variantes son archivos *txt* dentro de cada carpeta.
+### Evaluating responses
 
-Usar como guía el siguiente ejemplo:
+`evaluate_mul(filenames, dataset, eval_function, eval_params=None, train_set_size=100, seed=42, model="gpt-4o-mini", temperature=0.1)` (key `evaluate`):
 
-```
-prompt_data = {
-    "examples_basic": "examples_XXXX_basic.txt",
-    "context": "...",
-    "question": "...",
-    "answer": "...",
-    "instructions": {
-        "analysis": "...",
-        "feedback": "...",
-        "score": "...",
-    }
-}
-```
+- **eval_function**: mapping from the 0–10 score to the 0–3 scale. The paper uses `map2-simple` (thresholds `a`, `b`).
+- **eval_params**: mapping parameters. If `null`, they are fitted by differential evolution on a training set (which queries the model).
+- **train_set_size**: size of the training set.
 
-Además, se puede utilizar el comodín * como valor para probar con todos los miniprompts de una carpeta en particular.
+Results are saved in `Evals/` (prefix `T_` when the parameters were fitted). In the suites, each experiment can set `objective` to `mse` or `macro` (Macro-MSE) for the fit.
 
-Finalmente, cargar el o los prompts con la función `generate_prompts(prompt_data, prompt_folder, visualize=True)`
-
-- **prompt_data** - Diccionario con la estructura del prompt.
-- **prompt_folder** - Ruta de la carpeta donde se encuentra la colección de miniprompts.
-- **visualize** - Para imprimir el prompt generado.
-
-En `config.json` este diccionario corresponde a la clave `prompt`, y la carpeta a `prompt_folder`.
-
-Formato de metadatos de los *mini-prompts*:
-- Una primera línea `#clave: descripción` agrega `clave` al diccionario de salida pedido al modelo. Si no tiene `:` (por ejemplo `#feedback`), se usa el nombre de la carpeta como clave.
-- En la carpeta `score`, cada línea `$criterio` o `$criterio: descripción` define un criterio a puntuar. Si el archivo no define criterios, se usa `score` como único criterio.
-
-## Ejecutar el experimento
-
-El experimento se divide en dos etapas: generar las respuestas del modelo y luego evaluarlas.
-
-### 1. Generar respuestas (`python main.py generate`)
-
-Equivale a `generate_responses(dataset, prompts, repetitions, set_size=100, seed=42, model="gpt-4o-mini", temperature=0.1, balance_set=False, repeat_set=False)` y se configura en la clave `generate` de `config.json` (junto con `model` y `temperature`).
-
-- **repetitions** - Número de conjuntos de prueba a evaluar para cada prompt.
-- **set_size** - Tamaño de cada conjunto de prueba.
-- **seed** - Semilla utilizada para la generación de los conjuntos.
-- **model** - Nombre del modelo a utilizar, por ejemplo `gpt-4o-mini`.
-- **temperature** - Temperatura del modelo.
-- **balance_set** - Para que cada conjunto tenga la misma cantidad de muestras para cada puntaje.
-- **repeat_set** - Para mantener el mismo conjunto en todas las repeticiones.
-
-Se genera un archivo `Responses/<variante>_<fecha>.xlsx` por prompt, donde `<variante>` es el archivo usado en el comodín * (o `prompt` si no se usó).
-
-### 2. Evaluar respuestas (`python main.py evaluate`)
-
-Equivale a `evaluate_mul(filenames, dataset, eval_function, eval_params=None, train_set_size=100, seed=42, model="gpt-4o-mini", temperature=0.1)` y se configura en la clave `evaluate`.
-
-- **eval_function** - Método para convertir los puntajes del modelo (escala 0-10) a escala 0-3. Puede ser `map2`, `map2-simple`, `map2-mini`, `map4` o `map4-mini`.
-- **eval_params** - Lista de parámetros usados para la conversión de puntajes. Dependen de la `eval_function` elegida. Si es `null`, los parámetros se ajustan automáticamente con un conjunto de entrenamiento (lo que implica nuevas consultas al modelo).
-- **train_set_size** - Tamaño del conjunto de entrenamiento.
-- **seed** - Semilla utilizada para generar los conjuntos de entrenamiento.
-
-Los resultados se guardan en `Evals/` (con prefijo `T_` cuando los parámetros fueron ajustados) y se muestran dos tablas con la media y desviación estándar de cada métrica.
-
-### 3. Revisar resultados (`python main.py read`)
-
-Equivale a `read_evals(filenames, normalize=False)`.
-
-- **filenames** - Archivos de evaluación a leer (por defecto, los de `Evals/` que empiezan con `--prefix`).
-- **normalize** - Para indicar si las métricas MSE y MAE deberían normalizarse entre 0 y 1.
-
-Cuando se lee un único archivo, y este fue generado con `repeat_set` o con una sola repetición, se guarda además un gráfico interactivo con la distribución de puntajes en `Plots/` (con `--show` se abre en el navegador).
-
-![Ejemplo de gráfico de distribución de puntajes](/images/plot.png)
+The original notebook `Framework_EvaluAI.ipynb` is kept for reference; the current code is in `evaluai/`.
