@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.env
+config.json
+GPTEvaluator/
+Responses/
+Evals/
+Plots/
+*.xlsx
+!data/evaluai_dataset.xlsx
+runs/
+run.log
+paper/

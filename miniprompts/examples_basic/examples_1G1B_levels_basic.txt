@@ -1,0 +1,16 @@
+### Examples
+**Question**: ¿Cuando se recomienda utilizar arreglos en vez de listas enlazadas? Haga referencia a complejidades temporales en su explicación.
+**Student's Answer**: Se recomienta utilizar arreglos cuando se quiere acceder a elementos en posiciones específicas. Acceder a posiciones en un arreglo tiene complejidad temporal O(1), mientras que en una lista enlazada la complejidad es O(n).
+**Score**: 10
+
+**Question**: ¿Cuando se recomienda utilizar arreglos en vez de listas enlazadas? Haga referencia a complejidades temporales en su explicación.
+**Student's Answer**: Un arreglo es recomendable en determinadas situaciones, mientras que la lista enlazada en otras.
+**Score**: 0
+
+**Question**: ¿Por qué la búsqueda en un arreglo tiene complejidad O(n)? Expliqe las razones de esta complejidad.
+**Student's Answer**: por la cantidad de veces que tiene que recorrer para encontrarlo ya que tiene que buscar una cantidad de veces según el numero que sea n , a veces hay que recorrer el arreglo completo para poder encontrarlo .
+**Score**: 7
+
+**Question**: Al usar un arreglo circular para implementar una cola, ¿cómo se puede determinar cuándo la cola está llena o vacía? Explica detalladamente.
+**Student's Answer**: Al usar un arreglo circular para implementar una cola, la manera de saber si esta llena o vacía es obteniendo su talla mediante una funcion, si la talla es igual a 0 la cola esta vacía, caso contrario, la cola estará llena.
+**Score**: 3

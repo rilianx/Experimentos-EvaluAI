@@ -1,0 +1,5 @@
+(score) Assign a score between 0 and 10 to the student's answer according to the following criteria:
+8-10: The response is complete, accurate, and demonstrates a thorough understanding of the topic.
+5-7: The response is mostly correct but may contain minor inaccuracies or lack detail.
+3-4: The response shows partial understanding, with significant gaps or errors.
+0-2: The response is incorrect, irrelevant, or absent.

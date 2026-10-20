@@ -1,0 +1,205 @@
+{
+  "name": "optimization",
+  "description": "Experimentos del paper con preguntas del curso de Optimización (Tabla 9)",
+  "dataset": {
+    "path": "data/evaluai_dataset.xlsx",
+    "sheet_name": "Optimization",
+    "columns": {
+      "context": "knowledge_detailed",
+      "question": "question",
+      "answer": "answer",
+      "real_eval": "score",
+      "dataset": "exam"
+    }
+  },
+  "prompt_folder": "miniprompts",
+  "model": "gpt-4o-mini-2024-07-18",
+  "temperature": 0.1,
+  "generate": {
+    "repetitions": 10,
+    "set_size": 100,
+    "seed": 42,
+    "balance_set": false,
+    "repeat_set": false
+  },
+  "evaluate": {
+    "eval_function": "map2-simple",
+    "eval_params": [
+      1.0,
+      1,
+      9
+    ],
+    "train_set_size": 100,
+    "seed": 42
+  },
+  "experiments": [
+    {
+      "name": "base",
+      "prompt": {
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "knowledge",
+      "prompt": {
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt"
+        }
+      }
+    },
+    {
+      "name": "feedback_minimal",
+      "prompt": {
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt",
+          "feedback": "feedback_minimal.txt"
+        }
+      }
+    },
+    {
+      "name": "feedback_full_soft",
+      "prompt": {
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_single.txt",
+          "feedback": "feedback_full_soft.txt"
+        }
+      }
+    },
+    {
+      "name": "final_adjusted",
+      "responses_from": "feedback_minimal",
+      "evaluate": {
+        "eval_params": null
+      }
+    },
+    {
+      "name": "final_adjusted_macro",
+      "responses_from": "knowledge",
+      "evaluate": {
+        "eval_params": null,
+        "objective": "macro"
+      }
+    },
+    {
+      "name": "knowledge_criteria",
+      "prompt": {
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric10.txt"
+        }
+      }
+    },
+    {
+      "name": "final_adjusted_criteria_macro",
+      "responses_from": "knowledge_criteria",
+      "evaluate": {
+        "eval_params": null,
+        "objective": "macro"
+      }
+    }
+  ],
+  "comparisons": [
+    [
+      "base",
+      "knowledge"
+    ],
+    [
+      "knowledge",
+      "feedback_minimal"
+    ],
+    [
+      "knowledge",
+      "feedback_full_soft"
+    ],
+    [
+      "feedback_minimal",
+      "final_adjusted"
+    ],
+    [
+      "knowledge",
+      "final_adjusted_macro"
+    ],
+    [
+      "knowledge",
+      "knowledge_criteria"
+    ],
+    [
+      "knowledge_criteria",
+      "final_adjusted_criteria_macro"
+    ]
+  ],
+  "analyses": {
+    "raw_distribution": [
+      "base",
+      "knowledge",
+      "knowledge_criteria"
+    ],
+    "sensitivity": {
+      "experiment": "knowledge",
+      "a_range": [
+        0,
+        5.01,
+        0.5
+      ],
+      "b_range": [
+        5,
+        10.01,
+        0.5
+      ]
+    },
+    "calibration": [
+      {
+        "experiment": "knowledge",
+        "sizes": [
+          5,
+          10,
+          20,
+          40,
+          60
+        ],
+        "fixed_params": [
+          1.0,
+          1,
+          9
+        ],
+        "draws": 3
+      },
+      {
+        "experiment": "knowledge",
+        "sizes": [
+          5,
+          10,
+          20,
+          40,
+          60
+        ],
+        "fixed_params": [
+          1.0,
+          1,
+          9
+        ],
+        "draws": 3,
+        "objective": "macro"
+      }
+    ],
+    "distribution_plots": [
+      "base",
+      "knowledge"
+    ]
+  }
+}
