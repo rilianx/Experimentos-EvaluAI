@@ -1,9 +1,9 @@
 openai>=1.0
-pandas>=2.0
-numpy
-scipy
-scikit-learn
+pandas==3.0.6
+numpy==2.5.4
+scipy==1.18.1
+scikit-learn==1.9.1
 plotly
-openpyxl
+openpyxl==3.1.5
 tzdata
-matplotlib
+matplotlib==3.11.2
