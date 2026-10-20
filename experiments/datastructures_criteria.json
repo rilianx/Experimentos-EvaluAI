@@ -259,6 +259,18 @@
       }
     },
     {
+      "name": "examples_1G1B_levels",
+      "prompt": {
+        "examples_basic": "examples_1G1B_levels_basic.txt",
+        "context": "context.txt",
+        "question": "question.txt",
+        "answer": "answer.txt",
+        "instructions": {
+          "score": "score_rubric10.txt"
+        }
+      }
+    },
+    {
       "name": "final_adjusted",
       "responses_from": "examples_0G4B",
       "evaluate": {
@@ -526,6 +538,10 @@
     [
       "examples_1G1B",
       "g1_final_adjusted_macro"
+    ],
+    [
+      "examples_1G1B",
+      "examples_1G1B_levels"
     ]
   ],
   "analyses": {
@@ -621,7 +637,8 @@
         "g1_feedback_minimal",
         "g1_feedback_normal",
         "g1_feedback_full",
-        "g1_feedback_full_soft"
+        "g1_feedback_full_soft",
+        "examples_1G1B_levels"
       ],
       "comparisons": [
         [
@@ -695,6 +712,10 @@
         [
           "examples_1G1B",
           "g1_feedback_full_soft"
+        ],
+        [
+          "examples_1G1B",
+          "examples_1G1B_levels"
         ]
       ]
     }
